@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Music, Calendar, Clock } from "lucide-react";
+import { Plus, Search, Music, Calendar, Clock, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SetlistCard } from "@/components/SetlistCard";
@@ -15,6 +16,7 @@ import { setlistService, songService } from "@/services/storage";
 export default function SetlistManager() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated, login, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<"setlists" | "songs">("setlists");
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -100,13 +102,28 @@ export default function SetlistManager() {
               </div>
             </div>
             
-            <Button 
-              className="bg-gradient-primary hover:shadow-glow-primary"
-              onClick={() => activeTab === "setlists" ? setCreateSetlistOpen(true) : setCreateSongOpen(true)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create {activeTab === "setlists" ? "Setlist" : "Song"}
-            </Button>
+            <div className="flex items-center gap-2">
+              {isAuthenticated ? (
+                <>
+                  <Button 
+                    className="bg-gradient-primary hover:shadow-glow-primary"
+                    onClick={() => activeTab === "setlists" ? setCreateSetlistOpen(true) : setCreateSongOpen(true)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create {activeTab === "setlists" ? "Setlist" : "Song"}
+                  </Button>
+                  <Button variant="outline" onClick={logout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={login} className="bg-gradient-primary hover:shadow-glow-primary">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -153,14 +170,14 @@ export default function SetlistManager() {
                 key={setlist.id}
                 setlist={setlist}
                 onSelect={handleSelectSetlist}
-                onEdit={handleEditSetlist}
+                onEdit={isAuthenticated ? handleEditSetlist : undefined}
               />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredSongs.map((song) => (
-              <SongCard key={song.id} song={song} onEdit={handleEditSong} />
+              <SongCard key={song.id} song={song} onEdit={isAuthenticated ? handleEditSong : undefined} />
             ))}
           </div>
         )}

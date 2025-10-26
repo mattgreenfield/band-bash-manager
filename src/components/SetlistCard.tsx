@@ -7,7 +7,7 @@ import { Setlist, Song } from "@/types";
 interface SetlistCardProps {
   setlist: Setlist & { songs: Song[] };
   onSelect: (setlist: Setlist & { songs: Song[] }) => void;
-  onEdit: (setlist: Setlist & { songs: Song[] }) => void;
+  onEdit?: (setlist: Setlist & { songs: Song[] }) => void;
 }
 
 export function SetlistCard({ setlist, onSelect, onEdit }: SetlistCardProps) {
@@ -64,17 +64,19 @@ export function SetlistCard({ setlist, onSelect, onEdit }: SetlistCardProps) {
           >
             Open
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(setlist);
-            }}
-            className="border-border hover:bg-muted"
-          >
-            Edit
-          </Button>
+          {onEdit && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(setlist);
+              }}
+              className="border-border hover:bg-muted"
+            >
+              Edit
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

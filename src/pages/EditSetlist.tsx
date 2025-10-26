@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -109,6 +110,7 @@ export default function EditSetlist() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
   const [songLibrary, setSongLibrary] = useState<Song[]>([]);
   
@@ -129,6 +131,17 @@ export default function EditSetlist() {
   );
 
   useEffect(() => {
+    // Check authentication
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to edit setlists.",
+        variant: "destructive",
+      });
+      navigate("/");
+      return;
+    }
+
     // Load song library
     setSongLibrary(songService.getAll());
     
@@ -151,7 +164,7 @@ export default function EditSetlist() {
         navigate("/");
       }
     }
-  }, [id, form, navigate, toast]);
+  }, [id, form, navigate, toast, isAuthenticated]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
