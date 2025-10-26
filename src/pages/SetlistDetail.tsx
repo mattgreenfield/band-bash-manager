@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Music, Calendar, Clock, MapPin, Gauge, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Music, Calendar, Clock, MapPin, Gauge, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SongCard } from "@/components/SongCard";
@@ -9,6 +10,7 @@ import { setlistService } from "@/services/storage";
 export default function SetlistDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
   const [selectedSongIndex, setSelectedSongIndex] = useState<number | null>(null);
   const [setlist, setSetlist] = useState(setlistService.getById(id || ""));
 
@@ -77,6 +79,12 @@ export default function SetlistDetail() {
             </div>
 
             <div className="flex items-center gap-4">
+              {isAuthenticated && (
+                <Button variant="outline" size="sm" onClick={logout}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              )}
               <div className="text-right">
                 <div className="text-sm text-muted-foreground">Total Duration</div>
                 <div className="text-lg font-semibold text-foreground flex items-center gap-1">
