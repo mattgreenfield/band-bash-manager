@@ -1,9 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Calendar } from "lucide-react";
+import { Calendar, X, GripVertical, Plus } from "lucide-react";
 import { format } from "date-fns";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +44,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Setlist } from "@/types";
+import { Setlist, Song } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const setlistSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -37,11 +56,64 @@ const setlistSchema = z.object({
 
 type SetlistFormValues = z.infer<typeof setlistSchema>;
 
+interface SortableItemProps {
+  song: Song;
+  onRemove: () => void;
+}
+
+function SortableItem({ song, onRemove }: SortableItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: song.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2 p-2 bg-accent/50 rounded-md group"
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </button>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm truncate">{song.title}</p>
+        <p className="text-xs text-muted-foreground truncate">{song.artist}</p>
+      </div>
+      <span className="text-xs text-muted-foreground">{song.duration}m</span>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+        onClick={onRemove}
+      >
+        <X className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+}
+
 interface EditSetlistDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   setlist: Setlist | null;
   onUpdateSetlist: (id: string, updates: Partial<Setlist>) => void;
+  songLibrary: Song[];
 }
 
 export function EditSetlistDialog({
@@ -49,7 +121,9 @@ export function EditSetlistDialog({
   onOpenChange,
   setlist,
   onUpdateSetlist,
+  songLibrary,
 }: EditSetlistDialogProps) {
+  const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
   const form = useForm<SetlistFormValues>({
     resolver: zodResolver(setlistSchema),
     defaultValues: {
@@ -59,6 +133,13 @@ export function EditSetlistDialog({
     },
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   useEffect(() => {
     if (setlist) {
       form.reset({
@@ -66,23 +147,58 @@ export function EditSetlistDialog({
         date: new Date(setlist.date),
         venue: setlist.venue || "",
       });
+      setSelectedSongs(setlist.songs || []);
     }
   }, [setlist, form]);
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setSelectedSongs((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  const addSong = (song: Song) => {
+    if (!selectedSongs.find((s) => s.id === song.id)) {
+      setSelectedSongs([...selectedSongs, song]);
+    }
+  };
+
+  const removeSong = (songId: string) => {
+    setSelectedSongs(selectedSongs.filter((s) => s.id !== songId));
+  };
+
+  const availableSongs = songLibrary.filter(
+    (song) => !selectedSongs.find((s) => s.id === song.id)
+  );
+
+  const totalDuration = selectedSongs.reduce(
+    (sum, song) => sum + song.duration,
+    0
+  );
+
   const onSubmit = (data: SetlistFormValues) => {
     if (!setlist) return;
-    
+
     onUpdateSetlist(setlist.id, {
       name: data.name,
       date: data.date.toISOString().split("T")[0],
       venue: data.venue || undefined,
+      songs: selectedSongs,
+      totalDuration,
     });
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Setlist</DialogTitle>
         </DialogHeader>
@@ -155,6 +271,85 @@ export function EditSetlistDialog({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">
+                  Songs in Setlist ({selectedSongs.length})
+                </h3>
+                <Badge variant="secondary">{totalDuration} min total</Badge>
+              </div>
+
+              {selectedSongs.length > 0 ? (
+                <ScrollArea className="h-[200px] border rounded-md p-2">
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={selectedSongs.map((s) => s.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-2">
+                        {selectedSongs.map((song) => (
+                          <SortableItem
+                            key={song.id}
+                            song={song}
+                            onRemove={() => removeSong(song.id)}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </ScrollArea>
+              ) : (
+                <div className="h-[200px] border rounded-md flex items-center justify-center text-sm text-muted-foreground">
+                  No songs added yet
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold">Add from Song Library</h3>
+              {availableSongs.length > 0 ? (
+                <ScrollArea className="h-[150px] border rounded-md p-2">
+                  <div className="space-y-1">
+                    {availableSongs.map((song) => (
+                      <div
+                        key={song.id}
+                        className="flex items-center gap-2 p-2 hover:bg-accent/50 rounded-md group"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {song.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {song.artist}
+                          </p>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {song.duration}m
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => addSong(song)}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              ) : (
+                <div className="border rounded-md p-4 text-sm text-muted-foreground text-center">
+                  All songs have been added to this setlist
+                </div>
+              )}
+            </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button

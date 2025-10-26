@@ -220,6 +220,7 @@ export default function SetlistManager() {
           onOpenChange={setEditSetlistOpen}
           setlist={selectedSetlist}
           onUpdateSetlist={handleUpdateSetlist}
+          songLibrary={songs}
         />
 
         <CreateSongDialog
