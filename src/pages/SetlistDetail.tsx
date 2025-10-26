@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Music, Calendar, Clock, MapPin, Gauge, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ArrowLeft, Music, Calendar, Clock, MapPin, Gauge, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Song } from "@/types";
+import { SongCard } from "@/components/SongCard";
 import { setlistService } from "@/services/storage";
 
 export default function SetlistDetail() {
@@ -99,39 +99,17 @@ export default function SetlistDetail() {
             </h2>
           </div>
           
-          <div className="space-y-2 max-w-3xl">
+          <div className="space-y-3 max-w-3xl">
             {setlist.songs.map((song, index) => (
-              <div
-                key={song.id}
-                onClick={() => setSelectedSongIndex(index)}
-                className="flex items-center gap-4 p-4 bg-card/50 backdrop-blur-sm border border-border rounded-lg hover:bg-card hover:shadow-lg transition-all cursor-pointer group"
-              >
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-glow-primary">
+              <div key={song.id} className="relative">
+                <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-glow-primary z-10">
                   {index + 1}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                    {song.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">{song.artist}</p>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {song.key && (
-                    <div className="hidden sm:flex items-center gap-1">
-                      <Music className="w-4 h-4" />
-                      {song.key}
-                    </div>
-                  )}
-                  {song.tempo && (
-                    <div className="hidden md:flex items-center gap-1">
-                      <Gauge className="w-4 h-4" />
-                      {song.tempo}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {song.duration}m
-                  </div>
+                <div className="pl-10">
+                  <SongCard 
+                    song={song} 
+                    onClick={() => setSelectedSongIndex(index)}
+                  />
                 </div>
               </div>
             ))}

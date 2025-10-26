@@ -9,11 +9,15 @@ interface SongCardProps {
   order?: number;
   showOrder?: boolean;
   onEdit?: (song: Song) => void;
+  onClick?: (song: Song) => void;
 }
 
-export function SongCard({ song, order, showOrder = false, onEdit }: SongCardProps) {
+export function SongCard({ song, order, showOrder = false, onEdit, onClick }: SongCardProps) {
   return (
-    <Card className="group transition-all duration-300 hover:shadow-glow-accent hover:border-accent/50 bg-card/50 backdrop-blur-sm">
+    <Card 
+      className={`group transition-all duration-300 hover:shadow-glow-accent hover:border-accent/50 bg-card/50 backdrop-blur-sm ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={() => onClick?.(song)}
+    >
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
@@ -66,7 +70,10 @@ export function SongCard({ song, order, showOrder = false, onEdit }: SongCardPro
               variant="ghost"
               size="icon"
               className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => onEdit(song)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(song);
+              }}
             >
               <Edit className="h-4 w-4" />
             </Button>
