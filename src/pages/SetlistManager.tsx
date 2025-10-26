@@ -5,15 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SetlistCard } from "@/components/SetlistCard";
 import { SongCard } from "@/components/SongCard";
+import { CreateSetlistDialog } from "@/components/CreateSetlistDialog";
+import { EditSetlistDialog } from "@/components/EditSetlistDialog";
+import { CreateSongDialog } from "@/components/CreateSongDialog";
+import { EditSongDialog } from "@/components/EditSongDialog";
 import { Setlist, Song } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SetlistManager() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"setlists" | "songs">("setlists");
   const [searchQuery, setSearchQuery] = useState("");
+  
+  const [createSetlistOpen, setCreateSetlistOpen] = useState(false);
+  const [editSetlistOpen, setEditSetlistOpen] = useState(false);
+  const [selectedSetlist, setSelectedSetlist] = useState<Setlist | null>(null);
+  
+  const [createSongOpen, setCreateSongOpen] = useState(false);
+  const [editSongOpen, setEditSongOpen] = useState(false);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
   // Sample data
-  const [setlists] = useState<Setlist[]>([
+  const [setlists, setSetlists] = useState<Setlist[]>([
     {
       id: "1",
       name: "Summer Tour 2024",
@@ -39,7 +53,7 @@ export default function SetlistManager() {
     },
   ]);
 
-  const [songs] = useState<Song[]>([
+  const [songs, setSongs] = useState<Song[]>([
     { id: "1", title: "Opening Thunder", artist: "Your Band", duration: 4, key: "Em", tempo: 140, notes: "High energy opener" },
     { id: "2", title: "Midnight Drive", artist: "Your Band", duration: 3, key: "Am", tempo: 120 },
     { id: "3", title: "Electric Dreams", artist: "Your Band", duration: 5, key: "C", tempo: 130, notes: "Extended solo section" },
@@ -48,13 +62,60 @@ export default function SetlistManager() {
     { id: "6", title: "Neon Nights", artist: "Your Band", duration: 4, key: "Bm", tempo: 125 },
   ]);
 
+  const handleCreateSetlist = (newSetlist: Omit<Setlist, "id" | "songs" | "totalDuration">) => {
+    const setlist: Setlist = {
+      ...newSetlist,
+      id: Date.now().toString(),
+      songs: [],
+      totalDuration: 0,
+    };
+    setSetlists([...setlists, setlist]);
+    toast({
+      title: "Setlist created",
+      description: `${setlist.name} has been created successfully.`,
+    });
+  };
+
+  const handleUpdateSetlist = (id: string, updates: Partial<Setlist>) => {
+    setSetlists(setlists.map(s => s.id === id ? { ...s, ...updates } : s));
+    toast({
+      title: "Setlist updated",
+      description: "Changes have been saved successfully.",
+    });
+  };
+
   const handleSelectSetlist = (setlist: Setlist) => {
     navigate(`/setlist/${setlist.id}`);
   };
 
   const handleEditSetlist = (setlist: Setlist) => {
-    // Open edit modal
-    console.log("Editing setlist:", setlist.name);
+    setSelectedSetlist(setlist);
+    setEditSetlistOpen(true);
+  };
+
+  const handleCreateSong = (newSong: Omit<Song, "id">) => {
+    const song: Song = {
+      ...newSong,
+      id: Date.now().toString(),
+    };
+    setSongs([...songs, song]);
+    toast({
+      title: "Song added",
+      description: `${song.title} has been added to your library.`,
+    });
+  };
+
+  const handleUpdateSong = (id: string, updates: Partial<Song>) => {
+    setSongs(songs.map(s => s.id === id ? { ...s, ...updates } : s));
+    toast({
+      title: "Song updated",
+      description: "Changes have been saved successfully.",
+    });
+  };
+
+  const handleEditSong = (song: Song) => {
+    setSelectedSong(song);
+    setEditSongOpen(true);
   };
 
   const filteredSetlists = setlists.filter(setlist =>
@@ -83,7 +144,10 @@ export default function SetlistManager() {
               </div>
             </div>
             
-            <Button className="bg-gradient-primary hover:shadow-glow-primary">
+            <Button 
+              className="bg-gradient-primary hover:shadow-glow-primary"
+              onClick={() => activeTab === "setlists" ? setCreateSetlistOpen(true) : setCreateSongOpen(true)}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create {activeTab === "setlists" ? "Setlist" : "Song"}
             </Button>
@@ -140,10 +204,36 @@ export default function SetlistManager() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredSongs.map((song) => (
-              <SongCard key={song.id} song={song} />
+              <SongCard key={song.id} song={song} onEdit={handleEditSong} />
             ))}
           </div>
         )}
+
+        <CreateSetlistDialog
+          open={createSetlistOpen}
+          onOpenChange={setCreateSetlistOpen}
+          onCreateSetlist={handleCreateSetlist}
+        />
+
+        <EditSetlistDialog
+          open={editSetlistOpen}
+          onOpenChange={setEditSetlistOpen}
+          setlist={selectedSetlist}
+          onUpdateSetlist={handleUpdateSetlist}
+        />
+
+        <CreateSongDialog
+          open={createSongOpen}
+          onOpenChange={setCreateSongOpen}
+          onCreateSong={handleCreateSong}
+        />
+
+        <EditSongDialog
+          open={editSongOpen}
+          onOpenChange={setEditSongOpen}
+          song={selectedSong}
+          onUpdateSong={handleUpdateSong}
+        />
 
         {/* Stats Footer */}
         <div className="mt-12 text-center">

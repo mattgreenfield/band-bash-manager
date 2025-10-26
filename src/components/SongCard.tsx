@@ -1,19 +1,21 @@
-import { Clock, Music2, Hash, Zap, StickyNote } from "lucide-react";
+import { Clock, Music2, Hash, Zap, StickyNote, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Song } from "@/types";
 
 interface SongCardProps {
   song: Song;
   order?: number;
   showOrder?: boolean;
+  onEdit?: (song: Song) => void;
 }
 
-export function SongCard({ song, order, showOrder = false }: SongCardProps) {
+export function SongCard({ song, order, showOrder = false, onEdit }: SongCardProps) {
   return (
     <Card className="group transition-all duration-300 hover:shadow-glow-accent hover:border-accent/50 bg-card/50 backdrop-blur-sm">
       <CardContent className="p-4">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               {showOrder && order && (
@@ -58,6 +60,17 @@ export function SongCard({ song, order, showOrder = false }: SongCardProps) {
               </div>
             )}
           </div>
+          
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => onEdit(song)}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
