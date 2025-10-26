@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Music, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { CreateSongDialog } from "@/components/CreateSongDialog";
 import { EditSongDialog } from "@/components/EditSongDialog";
 import { Setlist, Song } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { setlistService, songService } from "@/services/storage";
 
 export default function SetlistManager() {
   const navigate = useNavigate();
@@ -26,50 +27,18 @@ export default function SetlistManager() {
   const [editSongOpen, setEditSongOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
-  // Sample data
-  const [setlists, setSetlists] = useState<Setlist[]>([
-    {
-      id: "1",
-      name: "Summer Tour 2024",
-      date: "2024-08-15",
-      venue: "The Fillmore",
-      songs: [
-        { id: "1", title: "Opening Thunder", artist: "Your Band", duration: 4 },
-        { id: "2", title: "Midnight Drive", artist: "Your Band", duration: 3 },
-        { id: "3", title: "Electric Dreams", artist: "Your Band", duration: 5 },
-      ],
-      totalDuration: 45,
-    },
-    {
-      id: "2", 
-      name: "Acoustic Night",
-      date: "2024-07-20",
-      venue: "Blue Note Cafe",
-      songs: [
-        { id: "4", title: "Whispered Secrets", artist: "Your Band", duration: 4 },
-        { id: "5", title: "Country Roads", artist: "Cover", duration: 3 },
-      ],
-      totalDuration: 30,
-    },
-  ]);
+  const [setlists, setSetlists] = useState<Setlist[]>([]);
+  const [songs, setSongs] = useState<Song[]>([]);
 
-  const [songs, setSongs] = useState<Song[]>([
-    { id: "1", title: "Opening Thunder", artist: "Your Band", duration: 4, key: "Em", tempo: 140, notes: "High energy opener" },
-    { id: "2", title: "Midnight Drive", artist: "Your Band", duration: 3, key: "Am", tempo: 120 },
-    { id: "3", title: "Electric Dreams", artist: "Your Band", duration: 5, key: "C", tempo: 130, notes: "Extended solo section" },
-    { id: "4", title: "Whispered Secrets", artist: "Your Band", duration: 4, key: "G", tempo: 80 },
-    { id: "5", title: "Country Roads", artist: "Cover", duration: 3, key: "D", tempo: 100 },
-    { id: "6", title: "Neon Nights", artist: "Your Band", duration: 4, key: "Bm", tempo: 125 },
-  ]);
+  // Load data on mount
+  useEffect(() => {
+    setSetlists(setlistService.getAll());
+    setSongs(songService.getAll());
+  }, []);
 
   const handleCreateSetlist = (newSetlist: Omit<Setlist, "id" | "songs" | "totalDuration">) => {
-    const setlist: Setlist = {
-      ...newSetlist,
-      id: Date.now().toString(),
-      songs: [],
-      totalDuration: 0,
-    };
-    setSetlists([...setlists, setlist]);
+    const setlist = setlistService.create(newSetlist);
+    setSetlists(setlistService.getAll());
     toast({
       title: "Setlist created",
       description: `${setlist.name} has been created successfully.`,
@@ -77,7 +46,8 @@ export default function SetlistManager() {
   };
 
   const handleUpdateSetlist = (id: string, updates: Partial<Setlist>) => {
-    setSetlists(setlists.map(s => s.id === id ? { ...s, ...updates } : s));
+    setlistService.update(id, updates);
+    setSetlists(setlistService.getAll());
     toast({
       title: "Setlist updated",
       description: "Changes have been saved successfully.",
@@ -94,11 +64,8 @@ export default function SetlistManager() {
   };
 
   const handleCreateSong = (newSong: Omit<Song, "id">) => {
-    const song: Song = {
-      ...newSong,
-      id: Date.now().toString(),
-    };
-    setSongs([...songs, song]);
+    const song = songService.create(newSong);
+    setSongs(songService.getAll());
     toast({
       title: "Song added",
       description: `${song.title} has been added to your library.`,
@@ -106,7 +73,8 @@ export default function SetlistManager() {
   };
 
   const handleUpdateSong = (id: string, updates: Partial<Song>) => {
-    setSongs(songs.map(s => s.id === id ? { ...s, ...updates } : s));
+    songService.update(id, updates);
+    setSongs(songService.getAll());
     toast({
       title: "Song updated",
       description: "Changes have been saved successfully.",
