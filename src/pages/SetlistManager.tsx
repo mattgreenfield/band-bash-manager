@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Search, Music, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { SongCard } from "@/components/SongCard";
 import { Setlist, Song } from "@/types";
 
 export default function SetlistManager() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"setlists" | "songs">("setlists");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -47,8 +49,7 @@ export default function SetlistManager() {
   ]);
 
   const handleSelectSetlist = (setlist: Setlist) => {
-    // Navigate to setlist detail view
-    console.log("Opening setlist:", setlist.name);
+    navigate(`/setlist/${setlist.id}`);
   };
 
   const handleEditSetlist = (setlist: Setlist) => {
