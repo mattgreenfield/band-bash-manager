@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { SetlistCard } from "@/components/SetlistCard";
 import { SongCard } from "@/components/SongCard";
 import { CreateSetlistDialog } from "@/components/CreateSetlistDialog";
-import { EditSetlistDialog } from "@/components/EditSetlistDialog";
 import { CreateSongDialog } from "@/components/CreateSongDialog";
 import { EditSongDialog } from "@/components/EditSongDialog";
 import { Setlist, Song } from "@/types";
@@ -20,8 +19,6 @@ export default function SetlistManager() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const [createSetlistOpen, setCreateSetlistOpen] = useState(false);
-  const [editSetlistOpen, setEditSetlistOpen] = useState(false);
-  const [selectedSetlist, setSelectedSetlist] = useState<Setlist | null>(null);
   
   const [createSongOpen, setCreateSongOpen] = useState(false);
   const [editSongOpen, setEditSongOpen] = useState(false);
@@ -45,22 +42,13 @@ export default function SetlistManager() {
     });
   };
 
-  const handleUpdateSetlist = (id: string, updates: Partial<Setlist>) => {
-    setlistService.update(id, updates);
-    setSetlists(setlistService.getAll());
-    toast({
-      title: "Setlist updated",
-      description: "Changes have been saved successfully.",
-    });
-  };
 
   const handleSelectSetlist = (setlist: Setlist) => {
     navigate(`/setlist/${setlist.id}`);
   };
 
   const handleEditSetlist = (setlist: Setlist) => {
-    setSelectedSetlist(setlist);
-    setEditSetlistOpen(true);
+    navigate(`/setlist/${setlist.id}/edit`);
   };
 
   const handleCreateSong = (newSong: Omit<Song, "id">) => {
@@ -181,14 +169,6 @@ export default function SetlistManager() {
           open={createSetlistOpen}
           onOpenChange={setCreateSetlistOpen}
           onCreateSetlist={handleCreateSetlist}
-        />
-
-        <EditSetlistDialog
-          open={editSetlistOpen}
-          onOpenChange={setEditSetlistOpen}
-          setlist={selectedSetlist}
-          onUpdateSetlist={handleUpdateSetlist}
-          songLibrary={songs}
         />
 
         <CreateSongDialog
