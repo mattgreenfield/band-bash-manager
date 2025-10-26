@@ -147,7 +147,8 @@ export function EditSetlistDialog({
         date: new Date(setlist.date),
         venue: setlist.venue || "",
       });
-      setSelectedSongs(setlist.songs || []);
+      // Setlist now has both songIds and hydrated songs
+      setSelectedSongs((setlist as any).songs || []);
     }
   }, [setlist, form]);
 
@@ -190,7 +191,7 @@ export function EditSetlistDialog({
       name: data.name,
       date: data.date.toISOString().split("T")[0],
       venue: data.venue || undefined,
-      songs: selectedSongs,
+      songIds: selectedSongs.map(s => s.id),
       totalDuration,
     });
     onOpenChange(false);

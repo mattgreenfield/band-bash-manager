@@ -2,12 +2,12 @@ import { Calendar, Clock, MapPin, Music } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Setlist } from "@/types";
+import { Setlist, Song } from "@/types";
 
 interface SetlistCardProps {
-  setlist: Setlist;
-  onSelect: (setlist: Setlist) => void;
-  onEdit: (setlist: Setlist) => void;
+  setlist: Setlist & { songs: Song[] };
+  onSelect: (setlist: Setlist & { songs: Song[] }) => void;
+  onEdit: (setlist: Setlist & { songs: Song[] }) => void;
 }
 
 export function SetlistCard({ setlist, onSelect, onEdit }: SetlistCardProps) {

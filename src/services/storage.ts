@@ -11,11 +11,7 @@ const INITIAL_SETLISTS: Setlist[] = [
     name: "Summer Tour 2024",
     date: "2024-08-15",
     venue: "The Fillmore",
-    songs: [
-      { id: "1", title: "Opening Thunder", artist: "Your Band", duration: 4 },
-      { id: "2", title: "Midnight Drive", artist: "Your Band", duration: 3 },
-      { id: "3", title: "Electric Dreams", artist: "Your Band", duration: 5 },
-    ],
+    songIds: ["1", "2", "3"],
     totalDuration: 45,
   },
   {
@@ -23,10 +19,7 @@ const INITIAL_SETLISTS: Setlist[] = [
     name: "Acoustic Night",
     date: "2024-07-20",
     venue: "Blue Note Cafe",
-    songs: [
-      { id: "4", title: "Whispered Secrets", artist: "Your Band", duration: 4 },
-      { id: "5", title: "Country Roads", artist: "Cover", duration: 3 },
-    ],
+    songIds: ["4", "5"],
     totalDuration: 30,
   },
 ];
@@ -59,32 +52,47 @@ function saveToStorage<T>(key: string, value: T): void {
   }
 }
 
+// Helper to hydrate setlist with full song data
+function hydrateSetlist(setlist: Setlist): Setlist & { songs: Song[] } {
+  const songs = songService.getAll();
+  const hydrated = setlist.songIds
+    .map(songId => songs.find(s => s.id === songId))
+    .filter((song): song is Song => song !== undefined);
+  
+  return {
+    ...setlist,
+    songs: hydrated,
+  };
+}
+
 // Setlist CRUD operations
 export const setlistService = {
-  getAll: (): Setlist[] => {
-    return getFromStorage(SETLISTS_KEY, INITIAL_SETLISTS);
+  getAll: (): (Setlist & { songs: Song[] })[] => {
+    const setlists = getFromStorage(SETLISTS_KEY, INITIAL_SETLISTS);
+    return setlists.map(hydrateSetlist);
   },
 
-  getById: (id: string): Setlist | null => {
-    const setlists = setlistService.getAll();
-    return setlists.find(s => s.id === id) || null;
+  getById: (id: string): (Setlist & { songs: Song[] }) | null => {
+    const setlists = getFromStorage(SETLISTS_KEY, INITIAL_SETLISTS);
+    const setlist = setlists.find(s => s.id === id);
+    return setlist ? hydrateSetlist(setlist) : null;
   },
 
-  create: (setlist: Omit<Setlist, "id" | "songs" | "totalDuration">): Setlist => {
+  create: (setlist: Omit<Setlist, "id" | "songIds" | "totalDuration">): Setlist & { songs: Song[] } => {
     const newSetlist: Setlist = {
       ...setlist,
       id: Date.now().toString(),
-      songs: [],
+      songIds: [],
       totalDuration: 0,
     };
-    const setlists = setlistService.getAll();
+    const setlists = getFromStorage(SETLISTS_KEY, INITIAL_SETLISTS);
     const updated = [...setlists, newSetlist];
     saveToStorage(SETLISTS_KEY, updated);
-    return newSetlist;
+    return hydrateSetlist(newSetlist);
   },
 
-  update: (id: string, updates: Partial<Setlist>): Setlist | null => {
-    const setlists = setlistService.getAll();
+  update: (id: string, updates: Partial<Setlist>): (Setlist & { songs: Song[] }) | null => {
+    const setlists = getFromStorage(SETLISTS_KEY, INITIAL_SETLISTS);
     const index = setlists.findIndex(s => s.id === id);
     if (index === -1) return null;
     
@@ -92,11 +100,11 @@ export const setlistService = {
       s.id === id ? { ...s, ...updates } : s
     );
     saveToStorage(SETLISTS_KEY, updated);
-    return updated[index];
+    return hydrateSetlist(updated[index]);
   },
 
   delete: (id: string): boolean => {
-    const setlists = setlistService.getAll();
+    const setlists = getFromStorage(SETLISTS_KEY, INITIAL_SETLISTS);
     const filtered = setlists.filter(s => s.id !== id);
     if (filtered.length === setlists.length) return false;
     

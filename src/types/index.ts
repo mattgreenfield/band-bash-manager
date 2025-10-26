@@ -13,7 +13,7 @@ export interface Setlist {
   name: string;
   date: string;
   venue?: string;
-  songs: Song[];
+  songIds: string[];
   totalDuration: number;
 }
 

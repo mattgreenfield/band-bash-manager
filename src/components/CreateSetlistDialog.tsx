@@ -40,7 +40,7 @@ type SetlistFormValues = z.infer<typeof setlistSchema>;
 interface CreateSetlistDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreateSetlist: (setlist: Omit<Setlist, "id" | "songs" | "totalDuration">) => void;
+  onCreateSetlist: (setlist: Omit<Setlist, "id" | "songIds" | "totalDuration">) => void;
 }
 
 export function CreateSetlistDialog({

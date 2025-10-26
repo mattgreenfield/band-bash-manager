@@ -27,7 +27,7 @@ export default function SetlistManager() {
   const [editSongOpen, setEditSongOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
-  const [setlists, setSetlists] = useState<Setlist[]>([]);
+  const [setlists, setSetlists] = useState<(Setlist & { songs: Song[] })[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
 
   // Load data on mount
@@ -36,7 +36,7 @@ export default function SetlistManager() {
     setSongs(songService.getAll());
   }, []);
 
-  const handleCreateSetlist = (newSetlist: Omit<Setlist, "id" | "songs" | "totalDuration">) => {
+  const handleCreateSetlist = (newSetlist: Omit<Setlist, "id" | "songIds" | "totalDuration">) => {
     const setlist = setlistService.create(newSetlist);
     setSetlists(setlistService.getAll());
     toast({
