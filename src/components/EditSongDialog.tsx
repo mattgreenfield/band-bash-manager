@@ -28,6 +28,7 @@ const songSchema = z.object({
   key: z.string().trim().max(10).optional(),
   tempo: z.coerce.number().min(1).max(999).optional().or(z.literal("")),
   notes: z.string().trim().max(500).optional(),
+  spotifyLink: z.string().trim().url("Must be a valid URL").max(500).optional().or(z.literal("")),
 });
 
 type SongFormValues = z.infer<typeof songSchema>;
@@ -54,6 +55,7 @@ export function EditSongDialog({
       key: "",
       tempo: "" as any,
       notes: "",
+      spotifyLink: "",
     },
   });
 
@@ -66,6 +68,7 @@ export function EditSongDialog({
         key: song.key || "",
         tempo: song.tempo || ("" as any),
         notes: song.notes || "",
+        spotifyLink: song.spotifyLink || "",
       });
     }
   }, [song, form]);
@@ -80,6 +83,7 @@ export function EditSongDialog({
       key: data.key || undefined,
       tempo: data.tempo ? Number(data.tempo) : undefined,
       notes: data.notes || undefined,
+      spotifyLink: data.spotifyLink || undefined,
     });
     onOpenChange(false);
   };
@@ -174,6 +178,23 @@ export function EditSongDialog({
                     <Textarea
                       placeholder="Extended solo section..."
                       className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="spotifyLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Spotify Link (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://open.spotify.com/track/..."
                       {...field}
                     />
                   </FormControl>

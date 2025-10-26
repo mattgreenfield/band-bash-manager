@@ -6,6 +6,7 @@ export interface Song {
   key?: string;
   tempo?: number;
   notes?: string;
+  spotifyLink?: string;
 }
 
 export interface Setlist {
