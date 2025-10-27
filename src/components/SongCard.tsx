@@ -22,12 +22,7 @@ export function SongCard({ song, order, showOrder = false, onEdit, onClick }: So
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* Song Title - Most Prominent */}
-            <div className="flex items-center gap-3 mb-2">
-              {showOrder && order && (
-                <Badge variant="outline" className="text-accent border-accent/30 bg-accent/10 text-sm px-2 py-1">
-                  #{order}
-                </Badge>
-              )}
+            <div className="flex items-center gap-3 mb-2 justify-space-between">
               <h3 className="text-xl font-bold text-foreground group-hover:text-accent transition-colors">
                 {song.title}
               </h3>
@@ -40,7 +35,7 @@ export function SongCard({ song, order, showOrder = false, onEdit, onClick }: So
             </div>
             
             <div className="flex items-center gap-3 mb-3">
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground">
                 {song.artist}
               </p>
               
