@@ -31,20 +31,18 @@ export function SongCard({ song, order, showOrder = false, onEdit, onClick }: So
               <h3 className="text-xl font-bold text-foreground group-hover:text-accent transition-colors">
                 {song.title}
               </h3>
-            </div>
-            
-            <p className="text-sm text-muted-foreground mb-4">
-              {song.artist}
-            </p>
-            
-            {/* Key - Prominent Display */}
-            <div className="flex items-center gap-3 mb-3">
               {song.key && (
                 <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-md">
                   <Music2 className="w-4 h-4 text-primary" />
                   <span className="font-semibold text-primary text-base">Key: {song.key}</span>
                 </div>
               )}
+            </div>
+            
+            <div className="flex items-center gap-3 mb-3">
+              <p className="text-sm text-muted-foreground mb-4">
+                {song.artist}
+              </p>
               
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />
