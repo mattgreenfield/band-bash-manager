@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Music, Calendar, Clock, MapPin, Gauge, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -110,8 +111,8 @@ export default function SetlistDetail() {
           <div className="space-y-3 max-w-3xl">
             {setlist.songs.map((song, index) => (
               <div key={song.id} className="relative">
-                <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-glow-primary z-10">
-                  {index + 1}
+                <div className="absolute -left-3 top-1/2 -translate-y-1/2 z-10">
+                  <Checkbox />
                 </div>
                 <div className="pl-10">
                   <SongCard 
