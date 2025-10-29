@@ -18,7 +18,7 @@ export function SetlistCard({ setlist, onSelect, onEdit }: SetlistCardProps) {
   };
 
   return (
-    <Card className="group cursor-pointer transition-all duration-300 hover:shadow-glow-primary hover:border-primary/50 bg-gradient-secondary">
+    <Card className="group cursor-pointer transition-all duration-300 hover:shadow-glow-primary hover:border-primary/50 bg-card">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary-glow transition-colors">
@@ -60,7 +60,7 @@ export function SetlistCard({ setlist, onSelect, onEdit }: SetlistCardProps) {
             variant="default" 
             size="sm" 
             onClick={() => onSelect(setlist)}
-            className="flex-1 bg-gradient-primary hover:shadow-glow-primary"
+            className="flex-1 bg-primary hover:shadow-glow-primary"
           >
             Open
           </Button>

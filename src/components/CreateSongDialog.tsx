@@ -193,7 +193,7 @@ export function CreateSongDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-gradient-primary">
+              <Button type="submit">
                 Add Song
               </Button>
             </div>

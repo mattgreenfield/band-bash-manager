@@ -151,7 +151,7 @@ export function CreateSetlistDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-gradient-primary">
+              <Button type="submit">
                 Create Setlist
               </Button>
             </div>

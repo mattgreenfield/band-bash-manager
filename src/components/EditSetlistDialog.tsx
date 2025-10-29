@@ -360,7 +360,7 @@ export function EditSetlistDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-gradient-primary">
+              <Button type="submit">
                 Save Changes
               </Button>
             </div>

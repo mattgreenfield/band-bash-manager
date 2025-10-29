@@ -35,11 +35,6 @@
     --input: 217 33% 17%;
     --ring: 263 70% 50%;
 
-    /* Music app gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 70% 50%), hsl(217 91% 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(217 33% 17%), hsl(224 27% 8%));
-    --gradient-accent: linear-gradient(135deg, hsl(142 76% 36%), hsl(158 64% 52%));
-    
     /* Performance lighting effects */
     --glow-primary: 0 0 20px hsl(263 70% 50% / 0.3);
     --glow-accent: 0 0 20px hsl(142 76% 36% / 0.3);

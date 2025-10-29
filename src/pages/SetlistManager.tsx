@@ -89,11 +89,11 @@ export default function SetlistManager() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-gradient-secondary backdrop-blur-lg sticky top-0 z-50">
+      <header className="border-b border-border bg-card backdrop-blur-lg sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow-primary">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-glow-primary">
                 <Music className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
@@ -106,7 +106,7 @@ export default function SetlistManager() {
               {isAuthenticated ? (
                 <>
                   <Button 
-                    className="bg-gradient-primary hover:shadow-glow-primary"
+                    className="hover:shadow-glow-primary"
                     onClick={() => activeTab === "setlists" ? setCreateSetlistOpen(true) : setCreateSongOpen(true)}
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -118,7 +118,7 @@ export default function SetlistManager() {
                   </Button>
                 </>
               ) : (
-                <Button onClick={login} className="bg-gradient-primary hover:shadow-glow-primary">
+                <Button onClick={login} className="hover:shadow-glow-primary">
                   <LogIn className="w-4 h-4 mr-2" />
                   Login
                 </Button>
@@ -135,7 +135,7 @@ export default function SetlistManager() {
             variant={activeTab === "setlists" ? "default" : "ghost"}
             size="sm"
             onClick={() => setActiveTab("setlists")}
-            className={activeTab === "setlists" ? "bg-gradient-primary shadow-glow-primary" : ""}
+            className={activeTab === "setlists" ? "bg-primary shadow-glow-primary" : ""}
           >
             <Calendar className="w-4 h-4 mr-2" />
             Setlists
@@ -144,7 +144,7 @@ export default function SetlistManager() {
             variant={activeTab === "songs" ? "default" : "ghost"}
             size="sm"
             onClick={() => setActiveTab("songs")}
-            className={activeTab === "songs" ? "bg-gradient-primary shadow-glow-primary" : ""}
+            className={activeTab === "songs" ? "bg-primary shadow-glow-primary" : ""}
           >
             <Music className="w-4 h-4 mr-2" />
             Song Library

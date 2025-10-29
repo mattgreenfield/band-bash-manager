@@ -37,7 +37,7 @@ export default function SetlistDetail() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-foreground mb-4">Setlist not found</h2>
-          <Button onClick={() => navigate("/")} className="bg-gradient-primary">
+          <Button onClick={() => navigate("/")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Setlists
           </Button>
@@ -49,7 +49,7 @@ export default function SetlistDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-gradient-secondary backdrop-blur-lg sticky top-0 z-50">
+      <header className="border-b border-border bg-card backdrop-blur-lg sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -110,7 +110,7 @@ export default function SetlistDetail() {
           <div className="space-y-3 max-w-3xl">
             {setlist.songs.map((song, index) => (
               <div key={song.id} className="relative">
-                <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-glow-primary z-10">
+                <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-glow-primary z-10">
                   {index + 1}
                 </div>
                 <div className="pl-10">
