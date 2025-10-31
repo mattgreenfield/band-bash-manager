@@ -12,7 +12,6 @@ import { EditSongDialog } from "@/components/EditSongDialog";
 import { Setlist, Song } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { setlistService, songService } from "@/services/storage";
-import { Tabbar, TabbarLink } from "konsta/react";
 
 export default function SetlistManager() {
   const navigate = useNavigate();
@@ -131,21 +130,25 @@ export default function SetlistManager() {
 
       <div className="container mx-auto px-6 py-8">
         {/* Navigation Tabs */}
-        <div className="mb-8">
-          <Tabbar className="left-0 bottom-auto top-0 relative">
-            <TabbarLink
-              active={activeTab === "setlists"}
-              onClick={() => setActiveTab("setlists")}
-              icon={<Calendar className="w-5 h-5" />}
-              label="Setlists"
-            />
-            <TabbarLink
-              active={activeTab === "songs"}
-              onClick={() => setActiveTab("songs")}
-              icon={<Music className="w-5 h-5" />}
-              label="Song Library"
-            />
-          </Tabbar>
+        <div className="flex items-center gap-1 mb-8 bg-muted/30 rounded-lg p-1 w-fit">
+          <Button
+            variant={activeTab === "setlists" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("setlists")}
+            className={activeTab === "setlists" ? "bg-primary shadow-glow-primary" : ""}
+          >
+            <Calendar className="w-4 h-4 mr-2" />
+            Setlists
+          </Button>
+          <Button
+            variant={activeTab === "songs" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("songs")}
+            className={activeTab === "songs" ? "bg-primary shadow-glow-primary" : ""}
+          >
+            <Music className="w-4 h-4 mr-2" />
+            Song Library
+          </Button>
         </div>
 
         {/* Search */}
