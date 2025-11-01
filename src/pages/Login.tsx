@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Music, LogIn } from "lucide-react";
@@ -8,15 +7,13 @@ export default function Login() {
   const navigate = useNavigate();
   const { isAuthenticated, login } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleLogin = () => {
     login();
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   return (
