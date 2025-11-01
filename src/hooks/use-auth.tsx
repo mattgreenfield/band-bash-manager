@@ -3,12 +3,10 @@ import { useState, useEffect } from 'react';
 const AUTH_TOKEN_KEY = 'auth_token';
 
 export const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    setIsAuthenticated(!!token);
-  }, []);
+    return !!token;
+  });
 
   const login = () => {
     const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
