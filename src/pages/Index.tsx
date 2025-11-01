@@ -1,7 +1,7 @@
-import SetlistManager from "./SetlistManager";
+import { Navigate } from "react-router-dom";
 
 const Index = () => {
-  return <SetlistManager />;
+  return <Navigate to="/setlists" replace />;
 };
 
 export default Index;

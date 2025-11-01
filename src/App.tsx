@@ -5,6 +5,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import Setlists from "./pages/Setlists";
+import Songs from "./pages/Songs";
 import SetlistDetail from "./pages/SetlistDetail";
 import EditSetlist from "./pages/EditSetlist";
 import Login from "./pages/Login";
@@ -21,6 +23,8 @@ const App = () => (
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+        <Route path="/setlists" element={<ProtectedRoute><Setlists /></ProtectedRoute>} />
+        <Route path="/songs" element={<ProtectedRoute><Songs /></ProtectedRoute>} />
         <Route path="/setlist/:id" element={<ProtectedRoute><SetlistDetail /></ProtectedRoute>} />
         <Route path="/setlist/:id/edit" element={<ProtectedRoute><EditSetlist /></ProtectedRoute>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
