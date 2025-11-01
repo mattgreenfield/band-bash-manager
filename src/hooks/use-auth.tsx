@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 
-const AUTH_TOKEN_KEY = 'auth_token';
+const AUTH_TOKEN_KEY = "auth_token";
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -9,7 +9,8 @@ export const useAuth = () => {
   });
 
   const login = () => {
-    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const token =
+      Math.random().toString(36).substring(2) + Date.now().toString(36);
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     setIsAuthenticated(true);
   };

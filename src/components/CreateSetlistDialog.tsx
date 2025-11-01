@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
@@ -40,7 +39,9 @@ type SetlistFormValues = z.infer<typeof setlistSchema>;
 interface CreateSetlistDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreateSetlist: (setlist: Omit<Setlist, "id" | "songIds" | "totalDuration">) => void;
+  onCreateSetlist: (
+    setlist: Omit<Setlist, "id" | "songIds" | "totalDuration">
+  ) => void;
 }
 
 export function CreateSetlistDialog({
@@ -115,13 +116,13 @@ export function CreateSetlistDialog({
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
+                      {/* <CalendarComponent
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
-                      />
+                      /> */}
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -151,9 +152,7 @@ export function CreateSetlistDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit">
-                Create Setlist
-              </Button>
+              <Button type="submit">Create Setlist</Button>
             </div>
           </form>
         </Form>

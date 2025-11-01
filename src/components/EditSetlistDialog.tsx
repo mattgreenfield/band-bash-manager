@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+
 import {
   Popover,
   PopoverContent,
@@ -191,7 +191,7 @@ export function EditSetlistDialog({
       name: data.name,
       date: data.date.toISOString().split("T")[0],
       venue: data.venue || undefined,
-      songIds: selectedSongs.map(s => s.id),
+      songIds: selectedSongs.map((s) => s.id),
       totalDuration,
     });
     onOpenChange(false);
@@ -245,13 +245,13 @@ export function EditSetlistDialog({
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
+                      {/* <CalendarComponent
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
-                      />
+                      /> */}
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -360,9 +360,7 @@ export function EditSetlistDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit">
-                Save Changes
-              </Button>
+              <Button type="submit">Save Changes</Button>
             </div>
           </form>
         </Form>

@@ -4,7 +4,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Calendar, X, GripVertical, Plus, ArrowLeft, Music } from "lucide-react";
+import {
+  Calendar,
+  X,
+  GripVertical,
+  Plus,
+  ArrowLeft,
+  Music,
+} from "lucide-react";
 import { format } from "date-fns";
 import {
   DndContext,
@@ -33,7 +40,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+
 import {
   Popover,
   PopoverContent,
@@ -113,7 +120,7 @@ export default function EditSetlist() {
   const { isAuthenticated } = useAuth();
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
   const [songLibrary, setSongLibrary] = useState<Song[]>([]);
-  
+
   const form = useForm<SetlistFormValues>({
     resolver: zodResolver(setlistSchema),
     defaultValues: {
@@ -144,7 +151,7 @@ export default function EditSetlist() {
 
     // Load song library
     setSongLibrary(songService.getAll());
-    
+
     // Load setlist if editing
     if (id) {
       const setlist = setlistService.getById(id);
@@ -205,15 +212,15 @@ export default function EditSetlist() {
       name: data.name,
       date: data.date.toISOString().split("T")[0],
       venue: data.venue || undefined,
-      songIds: selectedSongs.map(s => s.id),
+      songIds: selectedSongs.map((s) => s.id),
       totalDuration,
     });
-    
+
     toast({
       title: "Setlist updated",
       description: "Changes have been saved successfully.",
     });
-    
+
     navigate("/");
   };
 
@@ -236,8 +243,12 @@ export default function EditSetlist() {
                 <Music className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold font-stage text-foreground">Edit Setlist</h1>
-                <p className="text-sm text-muted-foreground">Update your setlist details</p>
+                <h1 className="text-2xl font-bold font-stage text-foreground">
+                  Edit Setlist
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Update your setlist details
+                </p>
               </div>
             </div>
           </div>
@@ -288,13 +299,13 @@ export default function EditSetlist() {
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarComponent
+                        {/* <CalendarComponent
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
                           className={cn("p-3 pointer-events-auto")}
-                        />
+                        /> */}
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -404,9 +415,7 @@ export default function EditSetlist() {
               >
                 Cancel
               </Button>
-              <Button type="submit">
-                Save Changes
-              </Button>
+              <Button type="submit">Save Changes</Button>
             </div>
           </form>
         </Form>
