@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { NavLink } from "react-router-dom";
+import { ListMusic, Music } from "lucide-react";
 
 export default function LayoutList({
   heading,
@@ -32,12 +33,14 @@ export default function LayoutList({
           to="/setlists"
           className={({ isActive }) => getNavLinkClass(isActive)}
         >
+          <ListMusic className="w-4 h-4 mr-2 inline-block" />
           Setlists
         </NavLink>
         <NavLink
           to="/songs"
           className={({ isActive }) => getNavLinkClass(isActive)}
         >
+          <Music className="w-4 h-4 mr-2 inline-block" />
           Song Library
         </NavLink>
       </div>
