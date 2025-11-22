@@ -1,4 +1,4 @@
-import { Clock, Music2, Zap } from "lucide-react";
+import { Clock, Music2, Zap, ChevronDown } from "lucide-react";
 
 import { Song } from "@/types";
 
@@ -12,7 +12,10 @@ interface SongCardProps {
 export function SongCard({ song, number, onEdit, onClick }: SongCardProps) {
   return (
     <details className="group border-b border-border/30 pb-4 mb-4 last:border-0">
-      <summary className="flex items-start cursor-pointer hover:bg-secondary/30 -mx-2 px-2 py-2 rounded-lg transition-colors">
+      <summary className="flex items-start cursor-pointer hover:bg-secondary/30 -mx-2 px-2 py-2 rounded-lg transition-colors list-none">
+        {song.notes && (
+          <ChevronDown className="w-5 h-5 text-primary mr-2 mt-0.5 flex-shrink-0 transition-transform group-open:rotate-180" />
+        )}
         {number !== undefined && (
           <div className="text-lg mr-4 text-muted-foreground font-bold min-w-[2rem]">{number}</div>
         )}
