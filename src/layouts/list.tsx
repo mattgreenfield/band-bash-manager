@@ -15,41 +15,46 @@ export default function LayoutList({
   const { logout } = useAuth();
 
   const getNavLinkClass = (isActive: boolean) => {
-    const baseClasses = "px-3 py-1 rounded-md transition-colors";
+    const baseClasses = "px-4 py-2 rounded-lg transition-all duration-200 font-medium";
     return isActive
-      ? "bg-muted-foreground text-muted " + baseClasses
-      : "hover:bg-accent hover:text-accent-foreground " + baseClasses;
+      ? "bg-primary text-primary-foreground shadow-glow " + baseClasses
+      : "hover:bg-secondary text-muted-foreground hover:text-foreground " + baseClasses;
   };
 
   return (
-    <div className="min-h-screen bg-background pt-4">
-      <div>
-        {/* Navigation Tabs */}
-        <div className="inline-flex items-center gap-1 mb-8 rounded-lg p-1 border border-border mx-6">
-          <NavLink
-            to="/setlists"
-            className={({ isActive }) => getNavLinkClass(isActive)}
-          >
-            <ListMusic className="w-4 h-4 mr-2 inline-block" />
-            Setlists
-          </NavLink>
-          <NavLink
-            to="/songs"
-            className={({ isActive }) => getNavLinkClass(isActive)}
-          >
-            <Music className="w-4 h-4 mr-2 inline-block" />
-            Song Library
-          </NavLink>
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Navigation Tabs */}
+          <div className="inline-flex items-center gap-2 bg-secondary/50 rounded-xl p-1.5 border border-border/50 shadow-sm">
+            <NavLink
+              to="/setlists"
+              className={({ isActive }) => getNavLinkClass(isActive)}
+            >
+              <ListMusic className="w-4 h-4 mr-2 inline-block" />
+              Setlists
+            </NavLink>
+            <NavLink
+              to="/songs"
+              className={({ isActive }) => getNavLinkClass(isActive)}
+            >
+              <Music className="w-4 h-4 mr-2 inline-block" />
+              Song Library
+            </NavLink>
+          </div>
+          <Button variant="outline" onClick={logout} className="border-border/50 hover:border-primary/50">
+            Logout
+          </Button>
         </div>
-        <Button variant="outline" onClick={logout}>
-          Logout
-        </Button>
       </div>
-      <div className="flex items-center justify-between mb-6 px-6">
-        <h1 className="text-4xl font-bold">{heading}</h1>
-        {action}
+      
+      <div className="px-6 pt-8 pb-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">{heading}</h1>
+          {action}
+        </div>
+        {children}
       </div>
-      {children}
     </div>
   );
 }

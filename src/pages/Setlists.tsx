@@ -44,20 +44,20 @@ export default function Setlists() {
         </Button>
       }
     >
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto">
         <div className="relative mb-8 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
             placeholder="Search setlists..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-card/50 backdrop-blur-sm border-border"
+            className="pl-12 h-12 bg-secondary/50 backdrop-blur-sm border-border/50 focus:border-primary/50 shadow-sm"
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredSetlists.map((setlist) => (
-            <Link to={`/setlist/${setlist.id}`} key={setlist.id}>
+            <Link to={`/setlist/${setlist.id}`} key={setlist.id} className="block">
               <SetlistCard setlist={setlist} />
             </Link>
           ))}
