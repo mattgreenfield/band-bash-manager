@@ -1,4 +1,4 @@
-import { Clock, Music2, Zap, ChevronDown } from "lucide-react";
+import { Clock, Music2, Zap, FileText } from "lucide-react";
 
 import { Song } from "@/types";
 
@@ -13,9 +13,6 @@ export function SongCard({ song, number, onEdit, onClick }: SongCardProps) {
   return (
     <details className="group border-b border-border/30 pb-4 mb-4 last:border-0">
       <summary className="flex items-start cursor-pointer hover:bg-secondary/30 -mx-2 px-2 py-2 rounded-lg transition-colors list-none">
-        {song.notes && (
-          <ChevronDown className="w-5 h-5 text-primary mr-2 mt-0.5 flex-shrink-0 transition-transform group-open:rotate-180" />
-        )}
         {number !== undefined && (
           <div className="text-lg mr-4 text-muted-foreground font-bold min-w-[2rem]">{number}</div>
         )}
@@ -35,14 +32,22 @@ export function SongCard({ song, number, onEdit, onClick }: SongCardProps) {
             </div>
           </div>
         </div>
-        {song.key && (
-          <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg ml-4 border border-primary/20">
-            <Music2 className="w-4 h-4 text-primary" />
-            <span className="font-bold text-primary text-base">
-              {song.key}
-            </span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 ml-4">
+          {song.notes && (
+            <div className="flex items-center gap-1 bg-secondary/50 px-2 py-1 rounded-md border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
+              <FileText className="w-3 h-3" />
+              <span className="font-medium">View Notes</span>
+            </div>
+          )}
+          {song.key && (
+            <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20">
+              <Music2 className="w-4 h-4 text-primary" />
+              <span className="font-bold text-primary text-base">
+                {song.key}
+              </span>
+            </div>
+          )}
+        </div>
       </summary>
       {song.notes && (
         <div className="mt-4 ml-12 bg-secondary/50 rounded-lg p-4 border border-border/50">
