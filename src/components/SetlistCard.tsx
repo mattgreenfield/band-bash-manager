@@ -1,5 +1,4 @@
 import { Calendar, Clock, MapPin, Music } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Setlist, Song } from "@/types";
 
 interface SetlistCardProps {
@@ -14,7 +13,7 @@ export function SetlistCard({ setlist }: SetlistCardProps) {
   };
 
   return (
-    <div className="border p-4">
+    <div className="card border border-muted-foreground/10 p-4 rounded-lg">
       <header>
         <h2>{setlist.name}</h2>
         {setlist.songs.length} songs
