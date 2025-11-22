@@ -207,16 +207,8 @@ export default function EditSetlist() {
   };
 
   return (
-    <LayoutList heading="Edit Setlist">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => navigate("/")}
-        className="hover:bg-accent/50"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </Button>
-      <div className="container mx-auto px-6 py-8 max-w-4xl">
+    <LayoutList heading="Edit Setlist" backLink={`/setlists/${id}`}>
+      <div className="">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-6 space-y-4">

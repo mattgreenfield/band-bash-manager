@@ -68,16 +68,9 @@ export default function SetlistDetail() {
   }
 
   return (
-    <LayoutList heading={setlist.name}>
-      <header className="container mx-auto px-6 py-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/")}
-          className="hover:bg-muted"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
+    <LayoutList
+      heading={setlist.name}
+      action={
         <Button
           variant="outline"
           className="ml-4"
@@ -87,6 +80,10 @@ export default function SetlistDetail() {
         >
           Edit
         </Button>
+      }
+      backLink={`/setlists`}
+    >
+      <header className="">
         <div className="">
           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
             <div className="flex items-center gap-1">
@@ -108,7 +105,7 @@ export default function SetlistDetail() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="">
         {/* Songs List */}
         <div className="mb-6">
           <ol className="space-y-3 max-w-3xl">

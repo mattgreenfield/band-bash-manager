@@ -44,7 +44,7 @@ export default function Setlists() {
         </Button>
       }
     >
-      <div className="container mx-auto">
+      <div className="">
         <div className="relative mb-8 max-w-md">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
@@ -57,7 +57,11 @@ export default function Setlists() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredSetlists.map((setlist) => (
-            <Link to={`/setlist/${setlist.id}`} key={setlist.id} className="block">
+            <Link
+              to={`/setlist/${setlist.id}`}
+              key={setlist.id}
+              className="block"
+            >
               <SetlistCard setlist={setlist} />
             </Link>
           ))}
