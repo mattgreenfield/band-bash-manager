@@ -43,7 +43,7 @@ const App = () => (
           }
         />
         <Route
-          path="/setlist/:id"
+          path="/setlists/:id"
           element={
             <ProtectedRoute>
               <SetlistDetail />
@@ -51,7 +51,7 @@ const App = () => (
           }
         />
         <Route
-          path="/setlist/:id/edit"
+          path="/setlists/:id/edit"
           element={
             <ProtectedRoute>
               <EditSetlist />

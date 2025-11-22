@@ -58,7 +58,7 @@ export default function Setlists() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredSetlists.map((setlist) => (
             <Link
-              to={`/setlist/${setlist.id}`}
+              to={`/setlists/${setlist.id}`}
               key={setlist.id}
               className="block"
             >

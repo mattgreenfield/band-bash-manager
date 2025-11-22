@@ -75,7 +75,7 @@ export default function SetlistDetail() {
           variant="outline"
           className="ml-4"
           onClick={() => {
-            navigate(`/setlist/${setlist.id}/edit`);
+            navigate(`/setlists/${setlist.id}/edit`);
           }}
         >
           Edit
