@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import LayoutList from "@/layouts/list";
 import {
   Popover,
   PopoverContent,
@@ -48,9 +48,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Song } from "@/types";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
+
 import { setlistService, songService } from "@/services/storage";
 
 const setlistSchema = z.object({
@@ -116,7 +114,6 @@ function SortableItem({ song, onRemove }: SortableItemProps) {
 export default function EditSetlist() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { isAuthenticated } = useAuth();
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
   const [songLibrary, setSongLibrary] = useState<Song[]>([]);
@@ -140,11 +137,6 @@ export default function EditSetlist() {
   useEffect(() => {
     // Check authentication
     if (!isAuthenticated) {
-      toast({
-        title: "Authentication required",
-        description: "Please login to edit setlists.",
-        variant: "destructive",
-      });
       navigate("/");
       return;
     }
@@ -163,15 +155,10 @@ export default function EditSetlist() {
         });
         setSelectedSongs(setlist.songs || []);
       } else {
-        toast({
-          title: "Setlist not found",
-          description: "Redirecting to home...",
-          variant: "destructive",
-        });
         navigate("/");
       }
     }
-  }, [id, form, navigate, toast, isAuthenticated]);
+  }, [id, form, navigate, isAuthenticated]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -216,45 +203,19 @@ export default function EditSetlist() {
       totalDuration,
     });
 
-    toast({
-      title: "Setlist updated",
-      description: "Changes have been saved successfully.",
-    });
-
     navigate("/");
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-              className="hover:bg-accent/50"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-glow-primary">
-                <Music className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold font-stage text-foreground">
-                  Edit Setlist
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Update your setlist details
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <LayoutList heading="Edit Setlist">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => navigate("/")}
+        className="hover:bg-accent/50"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </Button>
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -333,32 +294,30 @@ export default function EditSetlist() {
                 <h3 className="text-lg font-semibold">
                   Songs in Setlist ({selectedSongs.length})
                 </h3>
-                <Badge variant="secondary">{totalDuration} min total</Badge>
+                {totalDuration} min total
               </div>
 
               {selectedSongs.length > 0 ? (
-                <ScrollArea className="h-[300px] border rounded-md p-2">
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={selectedSongs.map((s) => s.id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <SortableContext
-                      items={selectedSongs.map((s) => s.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-2">
-                        {selectedSongs.map((song) => (
-                          <SortableItem
-                            key={song.id}
-                            song={song}
-                            onRemove={() => removeSong(song.id)}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                </ScrollArea>
+                    <div className="space-y-2">
+                      {selectedSongs.map((song) => (
+                        <SortableItem
+                          key={song.id}
+                          song={song}
+                          onRemove={() => removeSong(song.id)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               ) : (
                 <div className="h-[300px] border rounded-md flex items-center justify-center text-sm text-muted-foreground">
                   No songs added yet
@@ -369,37 +328,35 @@ export default function EditSetlist() {
             <div className="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-6 space-y-4">
               <h3 className="text-lg font-semibold">Add from Song Library</h3>
               {availableSongs.length > 0 ? (
-                <ScrollArea className="h-[250px] border rounded-md p-2">
-                  <div className="space-y-1">
-                    {availableSongs.map((song) => (
-                      <div
-                        key={song.id}
-                        className="flex items-center gap-2 p-2 hover:bg-accent/50 rounded-md group"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">
-                            {song.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {song.artist}
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {song.duration}m
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => addSong(song)}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                <div className="space-y-1">
+                  {availableSongs.map((song) => (
+                    <div
+                      key={song.id}
+                      className="flex items-center gap-2 p-2 hover:bg-accent/50 rounded-md group"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {song.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {song.artist}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </ScrollArea>
+                      <span className="text-xs text-muted-foreground">
+                        {song.duration}m
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => addSong(song)}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="border rounded-md p-4 text-sm text-muted-foreground text-center">
                   All songs have been added to this setlist
@@ -420,6 +377,6 @@ export default function EditSetlist() {
           </form>
         </Form>
       </div>
-    </div>
+    </LayoutList>
   );
 }

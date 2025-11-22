@@ -20,7 +20,7 @@ export default function Login() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-glow-primary mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center  mx-auto mb-4">
             <Music className="w-10 h-10 text-primary-foreground" />
           </div>
           <h1 className="text-4xl font-bold font-stage text-foreground mb-2">
@@ -42,9 +42,9 @@ export default function Login() {
               </p>
             </div>
 
-            <Button 
-              onClick={handleLogin} 
-              className="w-full py-6 text-lg hover:shadow-glow-primary"
+            <Button
+              onClick={handleLogin}
+              className="w-full py-6 text-lg "
               size="lg"
             >
               <LogIn className="w-5 h-5 mr-2" />

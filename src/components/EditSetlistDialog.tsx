@@ -45,8 +45,6 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Setlist, Song } from "@/types";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const setlistSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -278,32 +276,30 @@ export function EditSetlistDialog({
                 <h3 className="text-sm font-semibold">
                   Songs in Setlist ({selectedSongs.length})
                 </h3>
-                <Badge variant="secondary">{totalDuration} min total</Badge>
+                {totalDuration} min total
               </div>
 
               {selectedSongs.length > 0 ? (
-                <ScrollArea className="h-[200px] border rounded-md p-2">
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={selectedSongs.map((s) => s.id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <SortableContext
-                      items={selectedSongs.map((s) => s.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-2">
-                        {selectedSongs.map((song) => (
-                          <SortableItem
-                            key={song.id}
-                            song={song}
-                            onRemove={() => removeSong(song.id)}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                </ScrollArea>
+                    <div className="space-y-2">
+                      {selectedSongs.map((song) => (
+                        <SortableItem
+                          key={song.id}
+                          song={song}
+                          onRemove={() => removeSong(song.id)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               ) : (
                 <div className="h-[200px] border rounded-md flex items-center justify-center text-sm text-muted-foreground">
                   No songs added yet
@@ -314,37 +310,35 @@ export function EditSetlistDialog({
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Add from Song Library</h3>
               {availableSongs.length > 0 ? (
-                <ScrollArea className="h-[150px] border rounded-md p-2">
-                  <div className="space-y-1">
-                    {availableSongs.map((song) => (
-                      <div
-                        key={song.id}
-                        className="flex items-center gap-2 p-2 hover:bg-accent/50 rounded-md group"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">
-                            {song.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {song.artist}
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {song.duration}m
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => addSong(song)}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                <div className="space-y-1">
+                  {availableSongs.map((song) => (
+                    <div
+                      key={song.id}
+                      className="flex items-center gap-2 p-2 hover:bg-accent/50 rounded-md group"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {song.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {song.artist}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </ScrollArea>
+                      <span className="text-xs text-muted-foreground">
+                        {song.duration}m
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => addSong(song)}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="border rounded-md p-4 text-sm text-muted-foreground text-center">
                   All songs have been added to this setlist

@@ -1,46 +1,33 @@
 import { useState, useEffect } from "react";
-import { Plus, Search, Music, Calendar, Clock, LogOut } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SongCard } from "@/components/SongCard";
 import { CreateSongDialog } from "@/components/CreateSongDialog";
 import { EditSongDialog } from "@/components/EditSongDialog";
 import { Song } from "@/types";
-import { useToast } from "@/hooks/use-toast";
-import { setlistService, songService } from "@/services/storage";
+import { songService } from "@/services/storage";
 import LayoutList from "@/layouts/list";
 
 export default function Songs() {
-  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [createSongOpen, setCreateSongOpen] = useState(false);
   const [editSongOpen, setEditSongOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
-  const [setlistCount, setSetlistCount] = useState(0);
 
   useEffect(() => {
     setSongs(songService.getAll());
-    setSetlistCount(setlistService.getAll().length);
   }, []);
 
   const handleCreateSong = (newSong: Omit<Song, "id">) => {
     const song = songService.create(newSong);
     setSongs(songService.getAll());
-    toast({
-      title: "Song added",
-      description: `${song.title} has been added to your library.`,
-    });
   };
 
   const handleUpdateSong = (id: string, updates: Partial<Song>) => {
     songService.update(id, updates);
     setSongs(songService.getAll());
-    toast({
-      title: "Song updated",
-      description: "Changes have been saved successfully.",
-    });
   };
 
   const handleEditSong = (song: Song) => {
@@ -58,10 +45,7 @@ export default function Songs() {
     <LayoutList
       heading="Song Library"
       action={
-        <Button
-          className="hover:shadow-glow-primary"
-          onClick={() => setCreateSongOpen(true)}
-        >
+        <Button className="" onClick={() => setCreateSongOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Create Song
         </Button>
@@ -78,7 +62,7 @@ export default function Songs() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {filteredSongs.map((song) => (
             <SongCard key={song.id} song={song} onEdit={handleEditSong} />
           ))}
@@ -96,24 +80,6 @@ export default function Songs() {
           song={selectedSong}
           onUpdateSong={handleUpdateSong}
         />
-
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-8 text-sm text-muted-foreground bg-card/30 backdrop-blur-sm rounded-lg px-6 py-3 border border-border/50">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              {setlistCount} Setlists
-            </div>
-            <div className="flex items-center gap-2">
-              <Music className="w-4 h-4" />
-              {songs.length} Songs
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              {Math.round(songs.reduce((acc, song) => acc + song.duration, 0))}m
-              Total
-            </div>
-          </div>
-        </div>
       </div>
     </LayoutList>
   );
