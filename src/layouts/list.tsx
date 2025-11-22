@@ -15,10 +15,10 @@ export default function LayoutList({
 
   const getNavLinkClass = (isActive: boolean) => {
     const baseClasses =
-      "px-3 py-1 rounded-md hover:bg-accent hover:text-accent-foreground";
+      "px-3 py-1 rounded-md transition-colors";
     return isActive
       ? "bg-primary text-primary-foreground " + baseClasses
-      : baseClasses;
+      : "hover:bg-accent hover:text-accent-foreground " + baseClasses;
   };
 
   return (
