@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, X, Clock, Music2, Zap, FileText, Check } from "lucide-react";
+import { GripVertical, X, Clock, Music2, Zap, FileText, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Song } from "@/types";
 
@@ -21,6 +22,8 @@ export function SortableSongCard({
   isPlayed = false,
   onTogglePlayed,
 }: SortableSongCardProps) {
+  const [showNotes, setShowNotes] = useState(false);
+
   const {
     attributes,
     listeners,
@@ -39,57 +42,78 @@ export function SortableSongCard({
   if (isGigMode) {
     return (
       <div
-        className={`flex items-center gap-4 p-4 rounded-lg border transition-all ${
+        className={`rounded-lg border transition-all ${
           isPlayed
             ? "bg-primary/10 border-primary/30 opacity-60"
             : "bg-card/50 border-border/50 hover:border-primary/30"
         }`}
       >
-        <button
-          onClick={onTogglePlayed}
-          className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-            isPlayed
-              ? "bg-primary border-primary text-primary-foreground"
-              : "border-muted-foreground/50 hover:border-primary"
-          }`}
-        >
-          {isPlayed && <Check className="w-5 h-5" />}
-        </button>
-        <div className="text-2xl font-bold text-muted-foreground min-w-[2.5rem]">
-          {number}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className={`text-xl font-semibold mb-1 ${isPlayed ? "line-through text-muted-foreground" : "text-foreground"}`}>
-            {song.title}
-          </h3>
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-            <p className="font-medium">{song.artist}</p>
-            {song.tempo && (
+        <div className="flex items-center gap-4 p-4">
+          <button
+            onClick={onTogglePlayed}
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+              isPlayed
+                ? "bg-primary border-primary text-primary-foreground"
+                : "border-muted-foreground/50 hover:border-primary"
+            }`}
+          >
+            {isPlayed && <Check className="w-5 h-5" />}
+          </button>
+          <div className="text-2xl font-bold text-muted-foreground min-w-[2.5rem]">
+            {number}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className={`text-xl font-semibold mb-1 ${isPlayed ? "line-through text-muted-foreground" : "text-foreground"}`}>
+              {song.title}
+            </h3>
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <p className="font-medium">{song.artist}</p>
+              {song.tempo && (
+                <div className="flex items-center gap-1">
+                  <Zap className="w-4 h-4 text-primary/70" />
+                  <span>{song.tempo} BPM</span>
+                </div>
+              )}
               <div className="flex items-center gap-1">
-                <Zap className="w-4 h-4 text-primary/70" />
-                <span>{song.tempo} BPM</span>
+                <Clock className="w-4 h-4 text-primary/70" />
+                <span>{song.duration}m</span>
               </div>
-            )}
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4 text-primary/70" />
-              <span>{song.duration}m</span>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            {song.notes && (
+              <button
+                onClick={() => setShowNotes(!showNotes)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-sm transition-colors ${
+                  showNotes
+                    ? "bg-primary/20 border-primary/40 text-primary"
+                    : "bg-secondary/50 border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30"
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                <span className="font-medium hidden sm:inline">Notes</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showNotes ? "rotate-180" : ""}`} />
+              </button>
+            )}
+            {song.key && (
+              <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                <Music2 className="w-5 h-5 text-primary" />
+                <span className="font-bold text-primary text-lg">{song.key}</span>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {song.notes && (
-            <div className="flex items-center gap-1 bg-secondary/50 px-3 py-1.5 rounded-md border border-border/50 text-sm text-muted-foreground">
-              <FileText className="w-4 h-4" />
-              <span className="font-medium hidden sm:inline">Notes</span>
+        
+        {/* Expandable Notes Section */}
+        {song.notes && showNotes && (
+          <div className="px-4 pb-4 pt-0">
+            <div className="ml-16 bg-secondary/50 rounded-lg p-4 border border-border/50">
+              <p className="text-base text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                {song.notes}
+              </p>
             </div>
-          )}
-          {song.key && (
-            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
-              <Music2 className="w-5 h-5 text-primary" />
-              <span className="font-bold text-primary text-lg">{song.key}</span>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
