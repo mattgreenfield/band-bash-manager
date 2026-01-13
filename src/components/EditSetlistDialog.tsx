@@ -67,7 +67,7 @@ function SortableItem({ song, onRemove }: SortableItemProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: song.id });
+  } = useSortable({ id: song._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -110,7 +110,7 @@ interface EditSetlistDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   setlist: Setlist | null;
-  onUpdateSetlist: (id: string, updates: Partial<Setlist>) => void;
+  onUpdateSetlist: (_id: string, updates: Partial<Setlist>) => void;
   songLibrary: Song[];
 }
 
@@ -155,8 +155,8 @@ export function EditSetlistDialog({
 
     if (over && active.id !== over.id) {
       setSelectedSongs((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+        const oldIndex = items.findIndex((item) => item._id === active.id);
+        const newIndex = items.findIndex((item) => item._id === over.id);
 
         return arrayMove(items, oldIndex, newIndex);
       });
@@ -164,17 +164,17 @@ export function EditSetlistDialog({
   };
 
   const addSong = (song: Song) => {
-    if (!selectedSongs.find((s) => s.id === song.id)) {
+    if (!selectedSongs.find((s) => s._id === song._id)) {
       setSelectedSongs([...selectedSongs, song]);
     }
   };
 
   const removeSong = (songId: string) => {
-    setSelectedSongs(selectedSongs.filter((s) => s.id !== songId));
+    setSelectedSongs(selectedSongs.filter((s) => s._id !== songId));
   };
 
   const availableSongs = songLibrary.filter(
-    (song) => !selectedSongs.find((s) => s.id === song.id)
+    (song) => !selectedSongs.find((s) => s._id === song._id)
   );
 
   const totalDuration = selectedSongs.reduce(
@@ -185,11 +185,11 @@ export function EditSetlistDialog({
   const onSubmit = (data: SetlistFormValues) => {
     if (!setlist) return;
 
-    onUpdateSetlist(setlist.id, {
+    onUpdateSetlist(setlist._id, {
       name: data.name,
       date: data.date.toISOString().split("T")[0],
       venue: data.venue || undefined,
-      songIds: selectedSongs.map((s) => s.id),
+      songIds: selectedSongs.map((s) => s._id),
       totalDuration,
     });
     onOpenChange(false);
@@ -286,15 +286,15 @@ export function EditSetlistDialog({
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={selectedSongs.map((s) => s.id)}
+                    items={selectedSongs.map((s) => s._id)}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-2">
                       {selectedSongs.map((song) => (
                         <SortableItem
-                          key={song.id}
+                          key={song._id}
                           song={song}
-                          onRemove={() => removeSong(song.id)}
+                          onRemove={() => removeSong(song._id)}
                         />
                       ))}
                     </div>
@@ -313,7 +313,7 @@ export function EditSetlistDialog({
                 <div className="space-y-1">
                   {availableSongs.map((song) => (
                     <div
-                      key={song.id}
+                      key={song._id}
                       className="flex items-center gap-2 p-2 hover:bg-accent/50 rounded-md group"
                     >
                       <div className="flex-1 min-w-0">

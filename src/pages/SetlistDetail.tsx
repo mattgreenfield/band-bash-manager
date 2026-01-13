@@ -81,8 +81,8 @@ export default function SetlistDetail() {
   }, [id]);
 
   const availableSongs = useMemo(() => {
-    const currentSongIds = new Set(songs.map((s) => s.id));
-    return songLibrary.filter((song) => !currentSongIds.has(song.id));
+    const currentSongIds = new Set(songs.map((s) => s._id));
+    return songLibrary.filter((song) => !currentSongIds.has(song._id));
   }, [songs, songLibrary]);
 
   const totalDuration = useMemo(() => {
@@ -93,8 +93,8 @@ export default function SetlistDetail() {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setSongs((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+        const oldIndex = items.findIndex((item) => item._id === active.id);
+        const newIndex = items.findIndex((item) => item._id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
         // Save immediately
         saveSetlist(newItems);
@@ -106,8 +106,8 @@ export default function SetlistDetail() {
   const saveSetlist = (updatedSongs: Song[]) => {
     if (!setlist) return;
     const newTotalDuration = updatedSongs.reduce((sum, s) => sum + s.duration, 0);
-    setlistService.update(setlist.id, {
-      songIds: updatedSongs.map((s) => s.id),
+    setlistService.update(setlist._id, {
+      songIds: updatedSongs.map((s) => s._id),
       totalDuration: newTotalDuration,
     });
   };
@@ -120,14 +120,14 @@ export default function SetlistDetail() {
   };
 
   const removeSong = (songId: string) => {
-    const newSongs = songs.filter((s) => s.id !== songId);
+    const newSongs = songs.filter((s) => s._id !== songId);
     setSongs(newSongs);
     saveSetlist(newSongs);
   };
 
   const handleSaveMetadata = () => {
     if (!setlist) return;
-    setlistService.update(setlist.id, {
+    setlistService.update(setlist._id, {
       name: editName,
       date: editDate,
       venue: editVenue || undefined,
@@ -225,13 +225,13 @@ export default function SetlistDetail() {
           <div className="space-y-3 max-w-4xl mx-auto">
             {songs.map((song, index) => (
               <SortableSongCard
-                key={song.id}
+                key={song._id}
                 song={song}
                 number={index + 1}
                 onRemove={() => {}}
                 isGigMode={true}
-                isPlayed={playedSongs.has(song.id)}
-                onTogglePlayed={() => toggleSongPlayed(song.id)}
+                isPlayed={playedSongs.has(song._id)}
+                onTogglePlayed={() => toggleSongPlayed(song._id)}
               />
             ))}
           </div>
@@ -372,7 +372,7 @@ export default function SetlistDetail() {
               <div className="space-y-1 max-h-60 overflow-y-auto">
                 {availableSongs.map((song) => (
                   <button
-                    key={song.id}
+                    key={song._id}
                     onClick={() => addSong(song)}
                     className="w-full flex items-center gap-3 p-2 hover:bg-secondary/50 rounded-md text-left transition-colors"
                   >
@@ -396,14 +396,14 @@ export default function SetlistDetail() {
         {/* Sortable Songs List */}
         {songs.length > 0 ? (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={songs.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={songs.map((s) => s._id)} strategy={verticalListSortingStrategy}>
               <div className="space-y-2 max-w-3xl">
                 {songs.map((song, index) => (
                   <SortableSongCard
-                    key={song.id}
+                    key={song._id}
                     song={song}
                     number={index + 1}
-                    onRemove={() => removeSong(song.id)}
+                    onRemove={() => removeSong(song._id)}
                   />
                 ))}
               </div>

@@ -37,7 +37,7 @@ interface EditSongDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   song: Song | null;
-  onUpdateSong: (id: string, updates: Partial<Song>) => void;
+  onUpdateSong: (_id: string, updates: Partial<Song>) => void;
 }
 
 export function EditSongDialog({
@@ -76,7 +76,7 @@ export function EditSongDialog({
   const onSubmit = (data: SongFormValues) => {
     if (!song) return;
 
-    onUpdateSong(song.id, {
+    onUpdateSong(song._id, {
       title: data.title,
       artist: data.artist,
       duration: data.duration,
