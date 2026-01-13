@@ -31,7 +31,7 @@ export function SortableSongCard({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: song.id });
+  } = useSortable({ id: song._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),

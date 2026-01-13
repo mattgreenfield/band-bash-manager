@@ -1,5 +1,5 @@
 export interface Song {
-  id: string;
+  _id: string;
   title: string;
   artist: string;
   duration: number; // in minutes
@@ -10,7 +10,7 @@ export interface Song {
 }
 
 export interface Setlist {
-  id: string;
+  _id: string;
   name: string;
   date: string;
   venue?: string;

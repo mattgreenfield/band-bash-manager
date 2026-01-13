@@ -40,7 +40,7 @@ interface CreateSetlistDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreateSetlist: (
-    setlist: Omit<Setlist, "id" | "songIds" | "totalDuration">
+    setlist: Omit<Setlist, "_id" | "songIds" | "totalDuration">
   ) => void;
 }
 

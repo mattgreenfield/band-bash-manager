@@ -22,7 +22,7 @@ export default function Setlists() {
   }, []);
 
   const handleCreateSetlist = (
-    newSetlist: Omit<Setlist, "id" | "songIds" | "totalDuration">
+    newSetlist: Omit<Setlist, "_id" | "songIds" | "totalDuration">
   ) => {
     const setlist = setlistService.create(newSetlist);
     setSetlists(setlistService.getAll());
@@ -58,8 +58,8 @@ export default function Setlists() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredSetlists.map((setlist) => (
             <Link
-              to={`/setlists/${setlist.id}`}
-              key={setlist.id}
+              to={`/setlists/${setlist._id}`}
+              key={setlist._id}
               className="block"
             >
               <SetlistCard setlist={setlist} />

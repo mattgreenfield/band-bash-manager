@@ -20,13 +20,13 @@ export default function Songs() {
     setSongs(songService.getAll());
   }, []);
 
-  const handleCreateSong = (newSong: Omit<Song, "id">) => {
+  const handleCreateSong = (newSong: Omit<Song, "_id">) => {
     const song = songService.create(newSong);
     setSongs(songService.getAll());
   };
 
-  const handleUpdateSong = (id: string, updates: Partial<Song>) => {
-    songService.update(id, updates);
+  const handleUpdateSong = (_id: string, updates: Partial<Song>) => {
+    songService.update(_id, updates);
     setSongs(songService.getAll());
   };
 
@@ -64,7 +64,7 @@ export default function Songs() {
 
         <div className="grid grid-cols-1 gap-4">
           {filteredSongs.map((song) => (
-            <SongCard key={song.id} song={song} onEdit={handleEditSong} />
+            <SongCard key={song._id} song={song} onEdit={handleEditSong} />
           ))}
         </div>
 

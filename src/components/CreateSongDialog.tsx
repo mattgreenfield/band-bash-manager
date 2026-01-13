@@ -35,7 +35,7 @@ type SongFormValues = z.infer<typeof songSchema>;
 interface CreateSongDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreateSong: (song: Omit<Song, "id">) => void;
+  onCreateSong: (song: Omit<Song, "_id">) => void;
 }
 
 export function CreateSongDialog({
