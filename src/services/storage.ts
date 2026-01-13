@@ -33,11 +33,23 @@ const INITIAL_SONGS: Song[] = [
   { _id: "6", title: "Neon Nights", artist: "Your Band", duration: 4, key: "Bm", tempo: 125 },
 ];
 
+// Helper to migrate old id to _id
+function migrateId<T extends { id?: string; _id?: string }>(item: T): T {
+  if (item.id && !item._id) {
+    const { id, ...rest } = item;
+    return { ...rest, _id: id } as T;
+  }
+  return item;
+}
+
 // Helper functions for localStorage
-function getFromStorage<T>(key: string, initialValue: T): T {
+function getFromStorage<T extends { id?: string; _id?: string }>(key: string, initialValue: T[]): T[] {
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : initialValue;
+    if (!item) return initialValue;
+    const parsed = JSON.parse(item) as T[];
+    // Migrate old data with 'id' to '_id'
+    return parsed.map(migrateId);
   } catch (error) {
     console.error(`Error reading ${key} from localStorage:`, error);
     return initialValue;
