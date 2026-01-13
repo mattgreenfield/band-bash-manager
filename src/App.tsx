@@ -6,7 +6,6 @@ import Index from "./pages/Index";
 import Setlists from "./pages/Setlists";
 import Songs from "./pages/Songs";
 import SetlistDetail from "./pages/SetlistDetail";
-import EditSetlist from "./pages/EditSetlist";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -47,14 +46,6 @@ const App = () => (
           element={
             <ProtectedRoute>
               <SetlistDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/setlists/:id/edit"
-          element={
-            <ProtectedRoute>
-              <EditSetlist />
             </ProtectedRoute>
           }
         />
