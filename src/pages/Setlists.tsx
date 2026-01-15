@@ -7,7 +7,7 @@ import { SetlistCard } from "@/components/SetlistCard";
 import { CreateSetlistDialog } from "@/components/CreateSetlistDialog";
 import { Setlist, Song } from "@/types";
 
-import { setlistService, songService } from "@/services/storage";
+import { setlistService } from "@/services/storage";
 import LayoutList from "@/layouts/list";
 
 export default function Setlists() {
@@ -16,16 +16,28 @@ export default function Setlists() {
   const [searchQuery, setSearchQuery] = useState("");
   const [createSetlistOpen, setCreateSetlistOpen] = useState(false);
   const [setlists, setSetlists] = useState<(Setlist & { songs: Song[] })[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSetlists(setlistService.getAll());
+    setlistService.getAll().then((data) => {
+      setSetlists(data);
+      setLoading(false);
+    }).catch((err) => {
+      console.error("Failed to load setlists:", err);
+      setLoading(false);
+    });
   }, []);
 
-  const handleCreateSetlist = (
+  const handleCreateSetlist = async (
     newSetlist: Omit<Setlist, "_id" | "songIds" | "totalDuration">
   ) => {
-    const setlist = setlistService.create(newSetlist);
-    setSetlists(setlistService.getAll());
+    try {
+      await setlistService.create(newSetlist);
+      const updated = await setlistService.getAll();
+      setSetlists(updated);
+    } catch (err) {
+      console.error("Failed to create setlist:", err);
+    }
   };
 
   const filteredSetlists = setlists.filter(
@@ -55,17 +67,21 @@ export default function Setlists() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredSetlists.map((setlist) => (
-            <Link
-              to={`/setlists/${setlist._id}`}
-              key={setlist._id}
-              className="block"
-            >
-              <SetlistCard setlist={setlist} />
-            </Link>
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-muted-foreground">Loading setlists...</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredSetlists.map((setlist) => (
+              <Link
+                to={`/setlists/${setlist._id}`}
+                key={setlist._id}
+                className="block"
+              >
+                <SetlistCard setlist={setlist} />
+              </Link>
+            ))}
+          </div>
+        )}
 
         <CreateSetlistDialog
           open={createSetlistOpen}

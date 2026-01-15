@@ -47,6 +47,7 @@ export default function SetlistDetail() {
   const [setlist, setSetlist] = useState<(Setlist & { songs: Song[] }) | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [songLibrary, setSongLibrary] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Editing state
   const [isEditingMetadata, setIsEditingMetadata] = useState(false);
@@ -69,15 +70,29 @@ export default function SetlistDetail() {
   );
 
   useEffect(() => {
-    const loadedSetlist = setlistService.getById(id || "");
-    if (loadedSetlist) {
-      setSetlist(loadedSetlist);
-      setSongs(loadedSetlist.songs);
-      setEditName(loadedSetlist.name);
-      setEditDate(loadedSetlist.date);
-      setEditVenue(loadedSetlist.venue || "");
-    }
-    setSongLibrary(songService.getAll());
+    const loadData = async () => {
+      try {
+        const [loadedSetlist, allSongs] = await Promise.all([
+          setlistService.getById(id || ""),
+          songService.getAll()
+        ]);
+        
+        if (loadedSetlist) {
+          setSetlist(loadedSetlist);
+          setSongs(loadedSetlist.songs);
+          setEditName(loadedSetlist.name);
+          setEditDate(loadedSetlist.date);
+          setEditVenue(loadedSetlist.venue || "");
+        }
+        setSongLibrary(allSongs);
+      } catch (err) {
+        console.error("Failed to load setlist:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
   }, [id]);
 
   const availableSongs = useMemo(() => {
@@ -103,13 +118,17 @@ export default function SetlistDetail() {
     }
   };
 
-  const saveSetlist = (updatedSongs: Song[]) => {
+  const saveSetlist = async (updatedSongs: Song[]) => {
     if (!setlist) return;
     const newTotalDuration = updatedSongs.reduce((sum, s) => sum + s.duration, 0);
-    setlistService.update(setlist._id, {
-      songIds: updatedSongs.map((s) => s._id),
-      totalDuration: newTotalDuration,
-    });
+    try {
+      await setlistService.update(setlist._id, {
+        songIds: updatedSongs.map((s) => s._id),
+        totalDuration: newTotalDuration,
+      });
+    } catch (err) {
+      console.error("Failed to save setlist:", err);
+    }
   };
 
   const addSong = (song: Song) => {
@@ -125,19 +144,23 @@ export default function SetlistDetail() {
     saveSetlist(newSongs);
   };
 
-  const handleSaveMetadata = () => {
+  const handleSaveMetadata = async () => {
     if (!setlist) return;
-    setlistService.update(setlist._id, {
-      name: editName,
-      date: editDate,
-      venue: editVenue || undefined,
-    });
-    setSetlist((prev) =>
-      prev
-        ? { ...prev, name: editName, date: editDate, venue: editVenue || undefined }
-        : null
-    );
-    setIsEditingMetadata(false);
+    try {
+      await setlistService.update(setlist._id, {
+        name: editName,
+        date: editDate,
+        venue: editVenue || undefined,
+      });
+      setSetlist((prev) =>
+        prev
+          ? { ...prev, name: editName, date: editDate, venue: editVenue || undefined }
+          : null
+      );
+      setIsEditingMetadata(false);
+    } catch (err) {
+      console.error("Failed to save metadata:", err);
+    }
   };
 
   const handleCancelMetadata = () => {
@@ -174,6 +197,14 @@ export default function SetlistDetail() {
       ? "bg-primary text-primary-foreground shadow-glow " + baseClasses
       : "hover:bg-secondary text-muted-foreground hover:text-foreground " + baseClasses;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen container mx-auto px-6 py-8">
+        <p className="text-muted-foreground">Loading setlist...</p>
+      </div>
+    );
+  }
 
   if (!setlist) {
     return (

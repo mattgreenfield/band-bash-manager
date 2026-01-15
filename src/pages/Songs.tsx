@@ -15,19 +15,37 @@ export default function Songs() {
   const [editSongOpen, setEditSongOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSongs(songService.getAll());
+    songService.getAll().then((data) => {
+      setSongs(data);
+      setLoading(false);
+    }).catch((err) => {
+      console.error("Failed to load songs:", err);
+      setLoading(false);
+    });
   }, []);
 
-  const handleCreateSong = (newSong: Omit<Song, "_id">) => {
-    const song = songService.create(newSong);
-    setSongs(songService.getAll());
+  const handleCreateSong = async (newSong: Omit<Song, "_id">) => {
+    try {
+      await songService.create(newSong);
+      const updated = await songService.getAll();
+      setSongs(updated);
+    } catch (err) {
+      console.error("Failed to create song:", err);
+    }
   };
 
-  const handleUpdateSong = (_id: string, updates: Partial<Song>) => {
-    songService.update(_id, updates);
-    setSongs(songService.getAll());
+  const handleUpdateSong = async (_id: string, updates: Partial<Song>) => {
+    try {
+      await songService.update(_id, updates);
+      songService.clearCache();
+      const updated = await songService.getAll();
+      setSongs(updated);
+    } catch (err) {
+      console.error("Failed to update song:", err);
+    }
   };
 
   const handleEditSong = (song: Song) => {
@@ -62,11 +80,15 @@ export default function Songs() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {filteredSongs.map((song) => (
-            <SongCard key={song._id} song={song} onEdit={handleEditSong} />
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-muted-foreground">Loading songs...</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {filteredSongs.map((song) => (
+              <SongCard key={song._id} song={song} onEdit={handleEditSong} />
+            ))}
+          </div>
+        )}
 
         <CreateSongDialog
           open={createSongOpen}
