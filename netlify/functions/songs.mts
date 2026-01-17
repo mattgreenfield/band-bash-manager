@@ -47,7 +47,10 @@ export default async (
       if (id) {
         const song = await collection.findOne({ _id: new ObjectId(id) });
         if (!song) {
-          return new Response(JSON.stringify({ error: "Song not found" }), { status: 404, headers });
+          return new Response(JSON.stringify({ error: "Song not found" }), {
+            status: 404,
+            headers,
+          });
         }
         return new Response(JSON.stringify(song), { status: 200, headers });
       }
@@ -66,7 +69,10 @@ export default async (
     // PUT - Update song by id
     if (request.method === "PUT") {
       if (!id) {
-        return new Response(JSON.stringify({ error: "Song ID required" }), { status: 400, headers });
+        return new Response(JSON.stringify({ error: "Song ID required" }), {
+          status: 400,
+          headers,
+        });
       }
       const body = await request.json();
       const { _id, ...updateData } = body;
@@ -76,7 +82,10 @@ export default async (
         { returnDocument: "after" }
       );
       if (!result) {
-        return new Response(JSON.stringify({ error: "Song not found" }), { status: 404, headers });
+        return new Response(JSON.stringify({ error: "Song not found" }), {
+          status: 404,
+          headers,
+        });
       }
       return new Response(JSON.stringify(result), { status: 200, headers });
     }
@@ -84,18 +93,42 @@ export default async (
     // DELETE - Delete song by id
     if (request.method === "DELETE") {
       if (!id) {
-        return new Response(JSON.stringify({ error: "Song ID required" }), { status: 400, headers });
+        return new Response(JSON.stringify({ error: "Song ID required" }), {
+          status: 400,
+          headers,
+        });
       }
       const result = await collection.deleteOne({ _id: new ObjectId(id) });
       if (result.deletedCount === 0) {
-        return new Response(JSON.stringify({ error: "Song not found" }), { status: 404, headers });
+        return new Response(JSON.stringify({ error: "Song not found" }), {
+          status: 404,
+          headers,
+        });
       }
-      return new Response(JSON.stringify({ success: true }), { status: 200, headers });
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers,
+      });
     }
 
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers,
+    });
   } catch (error) {
-    console.error("Error in songs function:", error.errInfo.details, error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers });
+    // Safely extract errInfo.details if present; error is unknown so narrow its type
+    const details =
+      error &&
+      typeof error === "object" &&
+      "errInfo" in error &&
+      (error as any).errInfo &&
+      (error as any).errInfo.details
+        ? (error as any).errInfo.details
+        : error;
+    console.error("Error in songs function:", JSON.stringify(details));
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers,
+    });
   }
 };

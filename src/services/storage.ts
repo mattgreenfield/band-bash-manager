@@ -1,7 +1,9 @@
 import { Setlist, Song } from "@/types";
 
 // API endpoints
-const API_BASE = "https://setlists.netlify.app/.netlify/functions";
+const API_BASE = import.meta.env.DEV
+  ? "http://localhost:8888/.netlify/functions"
+  : "https://setlists.netlify.app/.netlify/functions";
 const SETLISTS_API = `${API_BASE}/setlists`;
 const SONGS_API = `${API_BASE}/songs`;
 
@@ -9,11 +11,14 @@ const SONGS_API = `${API_BASE}/songs`;
 let songsCache: Song[] | null = null;
 
 // Helper to hydrate setlist with full song data
-async function hydrateSetlist(setlist: Setlist, songs: Song[]): Promise<Setlist & { songs: Song[] }> {
+async function hydrateSetlist(
+  setlist: Setlist,
+  songs: Song[]
+): Promise<Setlist & { songs: Song[] }> {
   const hydrated = setlist.songIds
-    .map(songId => songs.find(s => s._id === songId))
+    .map((songId) => songs.find((s) => s._id === songId))
     .filter((song): song is Song => song !== undefined);
-  
+
   return {
     ...setlist,
     songs: hydrated,
@@ -25,41 +30,48 @@ export const setlistService = {
   getAll: async (): Promise<(Setlist & { songs: Song[] })[]> => {
     const [setlistsRes, songsRes] = await Promise.all([
       fetch(SETLISTS_API),
-      fetch(SONGS_API)
+      fetch(SONGS_API),
     ]);
-    
+
     if (!setlistsRes.ok) throw new Error("Failed to fetch setlists");
     if (!songsRes.ok) throw new Error("Failed to fetch songs");
-    
+
     const setlists: Setlist[] = await setlistsRes.json();
     const songs: Song[] = await songsRes.json();
     songsCache = songs;
-    
-    return Promise.all(setlists.map(s => hydrateSetlist(s, songs)));
+
+    return Promise.all(setlists.map((s) => hydrateSetlist(s, songs)));
   },
 
-  getById: async (_id: string): Promise<(Setlist & { songs: Song[] }) | null> => {
+  getById: async (
+    _id: string
+  ): Promise<(Setlist & { songs: Song[] }) | null> => {
     const [setlistsRes, songsRes] = await Promise.all([
       fetch(SETLISTS_API),
-      fetch(SONGS_API)
+      fetch(SONGS_API),
     ]);
-    
+
     if (!setlistsRes.ok || !songsRes.ok) return null;
-    
+
     const setlists: Setlist[] = await setlistsRes.json();
     const songs: Song[] = await songsRes.json();
     songsCache = songs;
-    
-    const setlist = setlists.find(s => s._id === _id);
+
+    const setlist = setlists.find((s) => s._id === _id);
     return setlist ? hydrateSetlist(setlist, songs) : null;
   },
 
-  create: async (setlist: Omit<Setlist, "_id" | "songIds" | "totalDuration">): Promise<Setlist & { songs: Song[] }> => {
+  create: async (
+    setlist: Omit<Setlist, "_id" | "songIds" | "totalDuration">
+  ): Promise<Setlist & { songs: Song[] }> => {
     // TODO: Implement POST endpoint on server
     throw new Error("Create setlist not implemented - needs POST endpoint");
   },
 
-  update: async (_id: string, updates: Partial<Setlist>): Promise<(Setlist & { songs: Song[] }) | null> => {
+  update: async (
+    _id: string,
+    updates: Partial<Setlist>
+  ): Promise<(Setlist & { songs: Song[] }) | null> => {
     // TODO: Implement PUT endpoint on server
     throw new Error("Update setlist not implemented - needs PUT endpoint");
   },
@@ -74,10 +86,10 @@ export const setlistService = {
 export const songService = {
   getAll: async (): Promise<Song[]> => {
     if (songsCache) return songsCache;
-    
+
     const res = await fetch(SONGS_API);
     if (!res.ok) throw new Error("Failed to fetch songs");
-    
+
     const songs: Song[] = await res.json();
     songsCache = songs;
     return songs;
@@ -85,7 +97,7 @@ export const songService = {
 
   getById: async (_id: string): Promise<Song | null> => {
     const songs = await songService.getAll();
-    return songs.find(s => s._id === _id) || null;
+    return songs.find((s) => s._id === _id) || null;
   },
 
   create: async (song: Omit<Song, "_id">): Promise<Song> => {
