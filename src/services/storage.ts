@@ -1,4 +1,5 @@
 import { Setlist, Song } from "@/types";
+import { getAuthHeaders } from "@/hooks/use-auth";
 
 // API endpoints - use localhost only when running on localhost
 const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
@@ -29,9 +30,10 @@ async function hydrateSetlist(
 // Setlist CRUD operations
 export const setlistService = {
   getAll: async (): Promise<(Setlist & { songs: Song[] })[]> => {
+    const headers = getAuthHeaders();
     const [setlistsRes, songsRes] = await Promise.all([
-      fetch(SETLISTS_API),
-      fetch(SONGS_API),
+      fetch(SETLISTS_API, { headers }),
+      fetch(SONGS_API, { headers }),
     ]);
 
     if (!setlistsRes.ok) throw new Error("Failed to fetch setlists");
@@ -47,9 +49,10 @@ export const setlistService = {
   getById: async (
     _id: string
   ): Promise<(Setlist & { songs: Song[] }) | null> => {
+    const headers = getAuthHeaders();
     const [setlistsRes, songsRes] = await Promise.all([
-      fetch(SETLISTS_API),
-      fetch(SONGS_API),
+      fetch(SETLISTS_API, { headers }),
+      fetch(SONGS_API, { headers }),
     ]);
 
     if (!setlistsRes.ok || !songsRes.ok) return null;
@@ -67,7 +70,7 @@ export const setlistService = {
   ): Promise<Setlist & { songs: Song[] }> => {
     const res = await fetch(SETLISTS_API, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ ...setlist, songIds: [] }),
     });
     if (!res.ok) throw new Error("Failed to create setlist");
@@ -82,7 +85,7 @@ export const setlistService = {
   ): Promise<(Setlist & { songs: Song[] }) | null> => {
     const res = await fetch(`${SETLISTS_API}?id=${_id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error("Failed to update setlist");
@@ -94,6 +97,7 @@ export const setlistService = {
   delete: async (_id: string): Promise<boolean> => {
     const res = await fetch(`${SETLISTS_API}?id=${_id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error("Failed to delete setlist");
     return true;
@@ -105,7 +109,7 @@ export const songService = {
   getAll: async (): Promise<Song[]> => {
     if (songsCache) return songsCache;
 
-    const res = await fetch(SONGS_API);
+    const res = await fetch(SONGS_API, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error("Failed to fetch songs");
 
     const songs: Song[] = await res.json();
@@ -121,7 +125,7 @@ export const songService = {
   create: async (song: Omit<Song, "_id">): Promise<Song> => {
     const res = await fetch(SONGS_API, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(song),
     });
     if (!res.ok) throw new Error("Failed to create song");
@@ -133,7 +137,7 @@ export const songService = {
   update: async (_id: string, updates: Partial<Song>): Promise<Song | null> => {
     const res = await fetch(`${SONGS_API}?id=${_id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error("Failed to update song");
@@ -145,6 +149,7 @@ export const songService = {
   delete: async (_id: string): Promise<boolean> => {
     const res = await fetch(`${SONGS_API}?id=${_id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error("Failed to delete song");
     songsCache = null; // Invalidate cache
