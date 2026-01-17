@@ -1,7 +1,8 @@
 import { Setlist, Song } from "@/types";
 
-// API endpoints
-const API_BASE = import.meta.env.DEV
+// API endpoints - use localhost only when running on localhost
+const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
+const API_BASE = isLocalhost
   ? "http://localhost:8888/.netlify/functions"
   : "https://setlists.netlify.app/.netlify/functions";
 const SETLISTS_API = `${API_BASE}/setlists`;
