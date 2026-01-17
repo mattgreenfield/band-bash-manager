@@ -89,21 +89,38 @@ export const songService = {
   },
 
   create: async (song: Omit<Song, "_id">): Promise<Song> => {
-    // TODO: Implement POST endpoint on server
-    throw new Error("Create song not implemented - needs POST endpoint");
+    const res = await fetch(SONGS_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(song),
+    });
+    if (!res.ok) throw new Error("Failed to create song");
+    const newSong: Song = await res.json();
+    songsCache = null; // Invalidate cache
+    return newSong;
   },
 
   update: async (_id: string, updates: Partial<Song>): Promise<Song | null> => {
-    // TODO: Implement PUT endpoint on server
-    throw new Error("Update song not implemented - needs PUT endpoint");
+    const res = await fetch(`${SONGS_API}?id=${_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) throw new Error("Failed to update song");
+    const updatedSong: Song = await res.json();
+    songsCache = null; // Invalidate cache
+    return updatedSong;
   },
 
   delete: async (_id: string): Promise<boolean> => {
-    // TODO: Implement DELETE endpoint on server
-    throw new Error("Delete song not implemented - needs DELETE endpoint");
+    const res = await fetch(`${SONGS_API}?id=${_id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete song");
+    songsCache = null; // Invalidate cache
+    return true;
   },
 
-  // Clear cache when needed (e.g., after mutations)
   clearCache: () => {
     songsCache = null;
   },
