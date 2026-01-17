@@ -48,6 +48,16 @@ export default function Songs() {
     }
   };
 
+  const handleDeleteSong = async (_id: string) => {
+    try {
+      await songService.delete(_id);
+      const updated = await songService.getAll();
+      setSongs(updated);
+    } catch (err) {
+      console.error("Failed to delete song:", err);
+    }
+  };
+
   const handleEditSong = (song: Song) => {
     setSelectedSong(song);
     setEditSongOpen(true);
@@ -101,6 +111,7 @@ export default function Songs() {
           onOpenChange={setEditSongOpen}
           song={selectedSong}
           onUpdateSong={handleUpdateSong}
+          onDeleteSong={handleDeleteSong}
         />
       </div>
     </LayoutList>

@@ -38,6 +38,7 @@ interface EditSongDialogProps {
   onOpenChange: (open: boolean) => void;
   song: Song | null;
   onUpdateSong: (_id: string, updates: Partial<Song>) => void;
+  onDeleteSong?: (_id: string) => void;
 }
 
 export function EditSongDialog({
@@ -45,6 +46,7 @@ export function EditSongDialog({
   onOpenChange,
   song,
   onUpdateSong,
+  onDeleteSong,
 }: EditSongDialogProps) {
   const form = useForm<SongFormValues>({
     resolver: zodResolver(songSchema),
@@ -203,17 +205,33 @@ export function EditSongDialog({
               )}
             />
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">
-                Save Changes
-              </Button>
+            <div className="flex justify-between pt-4">
+              {onDeleteSong && song && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    if (confirm("Are you sure you want to delete this song?")) {
+                      onDeleteSong(song._id);
+                      onOpenChange(false);
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
+              <div className="flex gap-2 ml-auto">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  Save Changes
+                </Button>
+              </div>
             </div>
           </form>
         </Form>
