@@ -1,5 +1,6 @@
 import { Context } from "@netlify/functions";
 import { MongoClient, ObjectId } from "mongodb";
+import { verifyToken, extractBearerToken, unauthorizedResponse } from "./auth-utils.mts";
 
 let cachedClient: MongoClient | null = null;
 
@@ -19,19 +20,30 @@ async function connectToDatabase() {
   return client;
 }
 
+const headers = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Content-Type": "application/json",
+};
+
 export default async (
   request: Request,
   context: Context
-): Promise<Response | undefined> => {
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Content-Type": "application/json",
-  };
-
+): Promise<Response> => {
   if (request.method === "OPTIONS") {
     return new Response("", { status: 200, headers });
+  }
+
+  // Validate authentication token
+  const token = extractBearerToken(request);
+  if (!token) {
+    return unauthorizedResponse(headers);
+  }
+
+  const authResult = verifyToken(token);
+  if (!authResult.valid) {
+    return unauthorizedResponse(headers);
   }
 
   try {
