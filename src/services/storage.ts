@@ -64,21 +64,38 @@ export const setlistService = {
   create: async (
     setlist: Omit<Setlist, "_id" | "songIds" | "totalDuration">
   ): Promise<Setlist & { songs: Song[] }> => {
-    // TODO: Implement POST endpoint on server
-    throw new Error("Create setlist not implemented - needs POST endpoint");
+    const res = await fetch(SETLISTS_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...setlist, songIds: [] }),
+    });
+    if (!res.ok) throw new Error("Failed to create setlist");
+    const created: Setlist = await res.json();
+    const songs = songsCache || (await songService.getAll());
+    return hydrateSetlist(created, songs);
   },
 
   update: async (
     _id: string,
     updates: Partial<Setlist>
   ): Promise<(Setlist & { songs: Song[] }) | null> => {
-    // TODO: Implement PUT endpoint on server
-    throw new Error("Update setlist not implemented - needs PUT endpoint");
+    const res = await fetch(`${SETLISTS_API}?id=${_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) throw new Error("Failed to update setlist");
+    const updated: Setlist = await res.json();
+    const songs = songsCache || (await songService.getAll());
+    return hydrateSetlist(updated, songs);
   },
 
   delete: async (_id: string): Promise<boolean> => {
-    // TODO: Implement DELETE endpoint on server
-    throw new Error("Delete setlist not implemented - needs DELETE endpoint");
+    const res = await fetch(`${SETLISTS_API}?id=${_id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete setlist");
+    return true;
   },
 };
 
