@@ -1,4 +1,5 @@
-import { Clock, Music2, Zap, FileText } from "lucide-react";
+import { Clock, Music2, Zap, FileText, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import { Song } from "@/types";
 
@@ -46,6 +47,20 @@ export function SongCard({ song, number, onEdit, onClick }: SongCardProps) {
                 {song.key}
               </span>
             </div>
+          )}
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit(song);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
           )}
         </div>
       </summary>
