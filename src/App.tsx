@@ -50,7 +50,11 @@ const App = () => (
           }
         />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={
+          <ProtectedRoute>
+            <NotFound />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   </QueryClientProvider>
