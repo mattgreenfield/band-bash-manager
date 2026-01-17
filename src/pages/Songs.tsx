@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SongCard } from "@/components/SongCard";
@@ -16,6 +16,7 @@ export default function Songs() {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     songService.getAll().then((data) => {
@@ -28,16 +29,20 @@ export default function Songs() {
   }, []);
 
   const handleCreateSong = async (newSong: Omit<Song, "_id">) => {
+    setSaving(true);
     try {
       await songService.create(newSong);
       const updated = await songService.getAll();
       setSongs(updated);
     } catch (err) {
       console.error("Failed to create song:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleUpdateSong = async (_id: string, updates: Partial<Song>) => {
+    setSaving(true);
     try {
       await songService.update(_id, updates);
       songService.clearCache();
@@ -45,16 +50,21 @@ export default function Songs() {
       setSongs(updated);
     } catch (err) {
       console.error("Failed to update song:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDeleteSong = async (_id: string) => {
+    setSaving(true);
     try {
       await songService.delete(_id);
       const updated = await songService.getAll();
       setSongs(updated);
     } catch (err) {
       console.error("Failed to delete song:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -93,10 +103,20 @@ export default function Songs() {
         {loading ? (
           <p className="text-muted-foreground">Loading songs...</p>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {filteredSongs.map((song) => (
-              <SongCard key={song._id} song={song} onEdit={handleEditSong} />
-            ))}
+          <div className="relative">
+            {saving && (
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Saving...</span>
+                </div>
+              </div>
+            )}
+            <div className="grid grid-cols-1 gap-4">
+              {filteredSongs.map((song) => (
+                <SongCard key={song._id} song={song} onEdit={handleEditSong} />
+              ))}
+            </div>
           </div>
         )}
 
