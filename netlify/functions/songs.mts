@@ -95,7 +95,7 @@ export default async (
 
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers });
   } catch (error) {
-    console.error("Error in songs function:", error);
+    console.error("Error in songs function:", error.errInfo.details, error);
     return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers });
   }
 };
